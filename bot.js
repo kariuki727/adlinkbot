@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.redirect('https://snipn.cc/');
 });
 
 const port = 8000;
