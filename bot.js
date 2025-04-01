@@ -25,7 +25,7 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
   const welcomeMessage = `Howdy🤝, ${username}!🌟\n\n`
-    + 'I’m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n'
+    + 'I’m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
     + 'Just send me the link you want to shorten, type or paste the URL directly, and I’ll take care of the rest.😜\n\n'
     + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
     + 'Let’s get started! 💸👇';
@@ -63,7 +63,7 @@ async function shortenUrlAndSend(chatId, Url) {
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, 'Please provide your SNIPN API token first([you can find the token here](https://snipn.cc/member/tools/api)). Use the command: /api YOUR_SNIPN_API_TOKEN');
+    bot.sendMessage(chatId, 'Please provide your SNIPN API token first. Use the command: /api YOUR_SNIPN_API_TOKEN');
     return;
   }
 
@@ -79,7 +79,7 @@ async function shortenUrlAndSend(chatId, Url) {
     bot.sendMessage(chatId, responseMessage);
   } catch (error) {
     console.error('Shorten URL Error:', error);
-    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check your API token([you can find the token here](https://snipn.cc/member/tools/api)) and try again.');
+    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token ](https://snipn.cc/member/tools/api) , then try again.');
   }
 }
 
