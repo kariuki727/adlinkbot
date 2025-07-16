@@ -33,6 +33,45 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, welcomeMessage);
 });
 
+// Handle /help command
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+  const helpMessage = `📚 *Snipn.cc Bot Help & FAQ* 🤖
+
+Here's how you can get started and start earning:
+
+🔹 *1. Create an Account on Snipn.cc*
+   - Go to [https://snipn.cc/register](https://snipn.cc/register)
+   - Fill in your details and register your free account.
+   - After logging in, go to *Dashboard > Tools > API*.
+
+🔹 *2. Get Your API Token*
+   - Visit: [https://snipn.cc/member/tools/api](https://snipn.cc/member/tools/api)
+   - Copy your unique *API Token*.
+
+🔹 *3. Add API Token to This Bot*
+   - Use the command: \`/api YOUR_API_TOKEN\`
+   - Example: \`/api 123abc456xyz789\`
+
+🔹 *4. Shorten and Share Links*
+   - Just paste any link (starting with http or https) into this chat.
+   - The bot will shorten it using your Snipn account.
+   - Share this shortened link on social media, websites, or blogs.
+
+💰 *Earn Money*
+   - You earn up to **$20 per 1,000 clicks**.
+   - More shares = More clicks = More earnings!
+
+Need more help? Visit [https://snipn.cc/contact](https://snipn.cc/contact)
+
+Start shortening and earning now! 💸`;
+
+  bot.sendMessage(chatId, helpMessage, {
+    parse_mode: 'Markdown',
+    disable_web_page_preview: false
+  });
+});
+
 
 // Command: /api
 bot.onText(/\/api (.+)/, (msg, match) => {
