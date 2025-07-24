@@ -1,5 +1,5 @@
 # AdLinkFly Telegram Bot
-##DEMO: https://t.me/snipnbot
+## DEMO: https://t.me/snipnbot
 ### This bot integrates AdLinkFly with Telegram to enable users to easily shorten long URLs, track clicks and visits, and monitor their earnings directly from their personal accounts via Telegram. The bot interacts with the AdLinkFly API and provides users with the following features:
 
 # Features:<br></br>
