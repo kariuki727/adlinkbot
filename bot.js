@@ -1,10 +1,10 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
-
 const express = require('express');
 const app = express();
 
+// Web server redirect
 app.get('/', (req, res) => {
   res.redirect('https://snipn.cc/');
 });
@@ -14,26 +14,35 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Retrieve the Telegram bot token from the environment variable
+// Telegram bot token from environment
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
-
-// Create the Telegram bot instance
 const bot = new TelegramBot(botToken, { polling: true });
 
-// Handle /start command
+// /start command with inline buttons
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
+
   const welcomeMessage = `Howdy🤝, ${username}!🌟\n\n`
     + 'I’m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
     + 'Just send me the link you want to shorten, type or paste the URL directly, and I’ll take care of the rest.😜\n\n'
-    + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
-    + 'Let’s get started! 💸👇';
+    + 'Let’s get started! 💸👇\n\n'
+    + '👀 *Not ready to register yet? Try the demo!*';
 
-  bot.sendMessage(chatId, welcomeMessage);
+  const keyboard = {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '🚀 Try Demo', callback_data: 'try_demo' }],
+        [{ text: '📚 Help', callback_data: 'help_info' }]
+      ]
+    },
+    parse_mode: 'Markdown'
+  };
+
+  bot.sendMessage(chatId, welcomeMessage, keyboard);
 });
 
-// Handle /help command
+// /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
   const helpMessage = `📚 *Snipn.cc Bot Help & FAQ* 🤖
@@ -72,81 +81,122 @@ Start shortening and earning now! 💸`;
   });
 });
 
+// Handle inline button callbacks
+bot.on('callback_query', async (callbackQuery) => {
+  const msg = callbackQuery.message;
+  const chatId = msg.chat.id;
+  const data = callbackQuery.data;
 
-// Command: /api
+  if (data === 'try_demo') {
+    bot.sendMessage(chatId, 'To try the demo, use:\n\n`/demo YOUR_URL`\n\nThis will shorten your link using a demo account. ⚠️ You won’t earn from this. To start earning, sign up at https://snipn.cc and provide your API using `/api YOUR_TOKEN`.', {
+      parse_mode: 'Markdown'
+    });
+  } else if (data === 'help_info') {
+    bot.emit('text', { ...msg, text: '/help' });
+  }
+
+  bot.answerCallbackQuery(callbackQuery.id);
+});
+
+// /api command to store user token
 bot.onText(/\/api (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const userToken = match[1].trim(); // Get the API token provided by the user
+  const userToken = match[1].trim();
 
-  // Save the user's SNIPN API token to the database
   saveUserToken(chatId, userToken);
 
-  const response = `Snipn API token set successfully. Your token: ${userToken}`;
+  const response = `✅ Snipn API token set successfully.\nYour token: ${userToken}`;
   bot.sendMessage(chatId, response);
 });
 
-// Listen for any message (not just commands)
+// /demo command for trial shortening
+bot.onText(/\/demo (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const demoUrl = match[1].trim();
+
+  if (!isValidUrl(demoUrl)) {
+    bot.sendMessage(chatId, '❌ Invalid URL. Please provide a valid link starting with http or https.');
+    return;
+  }
+
+  try {
+    const demoToken = 'e2a11f2b541ac72e65adb01b0d519a8567d5cd55';
+    const encodedUrl = encodeURIComponent(demoUrl);
+    const apiUrl = `https://snipn.cc/api?api=${demoToken}&url=${encodedUrl}&format=text&type=1`;
+
+    const response = await axios.get(apiUrl);
+    const shortUrl = response.data;
+
+    bot.sendMessage(chatId, `✅ *Demo Shortened URL:*\n${shortUrl}\n\n⚠️ This is just a demo. You won’t earn from this. To start earning, [sign up at Snipn](https://snipn.cc/auth/signup) and use your API token with \`/api YOUR_TOKEN\`.`, {
+      parse_mode: 'Markdown',
+      disable_web_page_preview: false
+    });
+  } catch (error) {
+    console.error('Demo Shorten Error:', error.message);
+    bot.sendMessage(chatId, '⚠️ Could not shorten the link in demo mode. Please try again later.');
+  }
+});
+
+// Shorten URL if valid and API is set
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
-  // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
   if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
     shortenUrlAndSend(chatId, messageText);
   }
 });
 
-// Function to shorten the URL and send the result
+// Shorten URL using user token
 async function shortenUrlAndSend(chatId, Url) {
-  // Retrieve the user's SNIPN API token from the database
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, 'Please provide your SNIPN API token first. Use the command: /api YOUR_SNIPN_API_TOKEN');
+    bot.sendMessage(chatId, '⚠️ Please provide your SNIPN API token first. Use the command:\n`/api YOUR_SNIPN_API_TOKEN`', {
+      parse_mode: 'Markdown'
+    });
     return;
   }
 
   try {
     const apiUrl = `https://snipn.cc/api?api=${arklinksToken}&url=${Url}`;
-
-    // Make a request to the SNIPN API to shorten the URL
     const response = await axios.get(apiUrl);
-    const shortUrl = response.data.shortenedUrl;
+    const shortUrl = response.data.shortenedUrl || response.data;
 
-
-    const responseMessage = `Shortened URL: ${shortUrl}`;
+    const responseMessage = `✅ Shortened URL: ${shortUrl}`;
     bot.sendMessage(chatId, responseMessage);
   } catch (error) {
     console.error('Shorten URL Error:', error);
-    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token ](https://snipn.cc/member/tools/api) , then try again.');
+    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token](https://snipn.cc/member/tools/api), then try again.', {
+      parse_mode: 'Markdown'
+    });
   }
 }
 
-// Function to validate the URL format
+// Validate URL format
 function isValidUrl(url) {
-  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
+  const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   return urlPattern.test(url);
 }
 
-// Function to save user's SNIPN API token to the database (Replit JSON database)
+// Save token to JSON file
 function saveUserToken(chatId, token) {
   const dbData = getDatabaseData();
   dbData[chatId] = token;
   fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
 }
 
-// Function to retrieve user's SNIPN API token from the database
+// Retrieve user token
 function getUserToken(chatId) {
   const dbData = getDatabaseData();
   return dbData[chatId];
 }
 
-// Function to read the database file and parse the JSON data
+// Read DB file
 function getDatabaseData() {
   try {
     return JSON.parse(fs.readFileSync('database.json', 'utf8'));
   } catch (error) {
-    // Return an empty object if the file doesn't exist or couldn't be parsed
     return {};
   }
 }
