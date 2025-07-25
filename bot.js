@@ -146,7 +146,7 @@ async function shortenUrlAndSend(chatId, Url) {
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, 'your ${process.env.WEBSITE_NAME} API token first. Use the command: /api YOUR_API_TOKEN');
+    bot.sendMessage(chatId, 'Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command: /api YOUR_API_TOKEN');
     return;
   }
 
