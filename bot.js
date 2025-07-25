@@ -34,7 +34,7 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
   const welcomeMessage = `Hello, ${username}! 👋\n\n`
-    + 'Welcome to the AdLinkFly URL Shortener Bot! 🚀\n\n'
+    + 'Welcome to our URL Shortener Bot! 🚀\n\n'
     + 'Before using the bot, please make sure you are a member of our support channel: \n'
     + `${supportChannelLink}\n\n`
     + 'To get started, please log in using the command: /login';
