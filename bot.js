@@ -22,31 +22,20 @@ const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 
-  // Automatically detect the base URL and set the webhook
-  const getBaseUrl = (req) => {
-    const protocol = req.protocol || 'https'; // Default to 'https' if not available
-    const host = req.get('host');  // Get the host (e.g., 'your-app.onrender.com')
-    return `${protocol}://${host}`;  // Construct the full base URL (https://your-app.onrender.com)
+  const getBaseUrl = () => {
+    const protocol = 'https'; // assuming https
+    const host = process.env.HOST || 'your-app.onrender.com';  // Make sure this is correct in your .env
+    return `${protocol}://${host}`; 
   };
 
-  app.post('/webhook', express.json(), (req, res) => {
-    const webhookUrl = getBaseUrl(req) + '/webhook';  // Build the dynamic webhook URL
-    bot.setWebHook(webhookUrl)
-      .then(() => {
-        console.log(`Webhook set to: ${webhookUrl}`);
-      })
-      .catch((err) => {
-        console.error('Error setting webhook:', err);
-      });
-    res.sendStatus(200);  // Respond with 200 OK to Telegram
-  });
-});
-
-// Handle incoming updates via webhook
-app.post('/webhook', express.json(), (req, res) => {
-  const update = req.body;  // Get the update data from Telegram
-  bot.processUpdate(update);  // Process the incoming update
-  res.sendStatus(200);  // Respond with 200 OK to Telegram
+  const webhookUrl = getBaseUrl() + '/webhook';  // Build the dynamic webhook URL
+  bot.setWebHook(webhookUrl)
+    .then(() => {
+      console.log(`Webhook set to: ${webhookUrl}`);
+    })
+    .catch((err) => {
+      console.error('Error setting webhook:', err);
+    });
 });
 
 // Handle /start command
@@ -188,28 +177,31 @@ async function shortenUrlAndSend(chatId, Url) {
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, '⚠️ Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command:\n`/api YOUR_API_TOKEN`', {
+    bot.sendMessage(chatId, `Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command:\n\`/api YOUR_API_TOKEN\``, {
       parse_mode: 'Markdown'
     });
     return;
   }
 
-  try {
-    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${Url}`
-    const response = await axios.get(apiUrl);
-    const shortUrl = response.data.shortenedUrl;
+  const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${encodeURIComponent(Url)}`;
 
-    const responseMessage = `Shortened URL: ${shortUrl}`;
-    bot.sendMessage(chatId, responseMessage);
+  try {
+    const response = await axios.get(apiUrl);
+    if (response.status === 200) {
+      const shortUrl = response.data.shortenedUrl;
+      bot.sendMessage(chatId, `Shortened URL: ${shortUrl}`);
+    } else {
+      throw new Error('Unexpected response status: ' + response.status);
+    }
   } catch (error) {
-    console.error('Shorten URL Error:', error);
+    console.error('Error during URL shortening:', error.message);
     bot.sendMessage(chatId, '⚠️ An error occurred while shortening the link. Please try again later.');
   }
 }
 
 // Helper function to validate URLs
 function isValidUrl(url) {
-  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
+  const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[a-zA-Z]{2,6}(\/[\w- .\/?%&=]*)?$/;
   return urlPattern.test(url);
 }
 
