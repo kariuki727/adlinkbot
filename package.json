@@ -1,17 +1,19 @@
 {
-  "name": "adlinkfly-bot",
+  "name": "adlinkbot",
   "version": "1.0.0",
-  "description": "Telegram bot for URL shortening and user authentication",
+  "description": "",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "axios": "^0.26.1",
-    "dotenv": "^16.0.0",
-    "mongoose": "^6.3.2",
-    "node-telegram-bot-api": "^0.56.0"
-  },
+  "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "dotenv",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "node-telegram-bot-api": "^0.66.0"
+  }
 }
