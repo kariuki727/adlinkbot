@@ -2,7 +2,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const fs = require('fs');
 dotenv.config();
 
 // Fetch configuration from environment variables
@@ -11,6 +10,7 @@ const websiteUrl = process.env.ADLINKFLY_API_URL;
 const apiKey = process.env.ADLINKFLY_API_KEY;
 const supportChannelLink = process.env.SUPPORT_CHANNEL_LINK;
 const dbUri = process.env.DATABASE_URL;
+const demoApiUrl = process.env.DEMO_API_URL; // The demo API for shortening links
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(botToken, { polling: true });
@@ -34,7 +34,7 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
   const welcomeMessage = `Hello, ${username}! 👋\n\n`
-    + 'Welcome to our URL Shortener Bot! 🚀\n\n'
+    + 'Welcome to the AdLinkFly URL Shortener Bot! 🚀\n\n'
     + 'Before using the bot, please make sure you are a member of our support channel: \n'
     + `${supportChannelLink}\n\n`
     + 'To get started, please log in using the command: /login';
@@ -90,33 +90,42 @@ bot.on('message', async (msg) => {
   }
 });
 
-// Command to shorten URLs
+// Handle any message that is a URL
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
-  // Check if the message is a valid URL
+  // If the message is a link, handle demo shortening or logged-in shortening
   if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
     // Get the user's data from the database
     const user = await User.findOne({ chatId });
+
     if (!user) {
-      return bot.sendMessage(chatId, 'You must log in first using the /login command.');
-    }
-
-    // Shorten the URL using AdLinkFly API
-    try {
-      const response = await axios.get(`${websiteUrl}/api/shorten?api_key=${user.apiToken}&url=${messageText}`);
-      const shortUrl = response.data.shortenedUrl;
-
-      bot.sendMessage(chatId, `Here’s your shortened URL: ${shortUrl}`);
-    } catch (error) {
-      console.error('Error shortening URL:', error);
-      bot.sendMessage(chatId, 'There was an error shortening your URL. Please try again later.');
+      // If the user is not logged in, show demo shortening
+      try {
+        const demoResponse = await axios.get(`${demoApiUrl}?url=${messageText}`);
+        const demoShortenedUrl = demoResponse.data.shortenedUrl;
+        bot.sendMessage(chatId, `Demo Shortened URL: ${demoShortenedUrl}\n\n`
+          + 'To earn and monitor your earnings, please log in using /login or create an account on our website.');
+      } catch (error) {
+        console.error('Error with demo shortening:', error);
+        bot.sendMessage(chatId, 'There was an error shortening your URL. Please try again later.');
+      }
+    } else {
+      // If the user is logged in, shorten the URL using their API token
+      try {
+        const response = await axios.get(`${websiteUrl}/api/shorten?api_key=${user.apiToken}&url=${messageText}`);
+        const shortUrl = response.data.shortenedUrl;
+        bot.sendMessage(chatId, `Here’s your shortened URL: ${shortUrl}`);
+      } catch (error) {
+        console.error('Error shortening URL:', error);
+        bot.sendMessage(chatId, 'There was an error shortening your URL. Please try again later.');
+      }
     }
   }
 });
 
-// Function to display error and guidance messages
+// Function to show error and guidance messages
 function showErrorAndHelp(chatId, errorMessage) {
   bot.sendMessage(chatId, `${errorMessage}\n\nIf you're unsure how to proceed, please visit our website for help or contact support.`);
 }
