@@ -28,12 +28,9 @@ const bot = new TelegramBot(botToken, { polling: true });
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const username = msg.from.username;
 
-  // Fetch the welcome message from the environment variable
-  const welcomeMessage = process.env.WELCOME_MESSAGE.replace("{username}", username)
-    .replace("{site_name}", process.env.SITE_NAME)
-    .replace("{site_link}", process.env.SITE_LINK);
+  // Fetch the entire welcome message from the environment variable
+  const welcomeMessage = process.env.WELCOME_MESSAGE;
 
   bot.sendMessage(chatId, welcomeMessage);
 });
