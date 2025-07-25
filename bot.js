@@ -1,136 +1,162 @@
+require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config();
+const { Client } = require('pg');  // PostgreSQL example; or mysql2 for MySQL
+const fs = require('fs');
 
-// Fetch configuration from environment variables
+// Load environment variables
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
-const websiteUrl = process.env.ADLINKFLY_API_URL;
-const apiKey = process.env.ADLINKFLY_API_KEY;
+const demoApiUrl = process.env.DEMO_API_URL;  // Demo API URL from environment
 const supportChannelLink = process.env.SUPPORT_CHANNEL_LINK;
-const dbUri = process.env.DATABASE_URL;
-const demoApiUrl = process.env.DEMO_API_URL; // The demo API for shortening links
+const siteUrl = process.env.SITE_URL;  // Site URL from environment
+const siteName = process.env.SITE_NAME;  // Site name from environment
+const apiToken = process.env.API_TOKEN;  // Site's default API token if needed
+const databaseHost = process.env.DATABASE_HOST;
+const databaseUser = process.env.DATABASE_USERNAME;
+const databasePassword = process.env.DATABASE_PASSWORD;
+const databaseName = process.env.DATABASE_NAME;
+const welcomeMessage = process.env.WELCOME_MESSAGE;
+const siteApiUrl = process.env.SITE_API_URL;  // Base API URL for shortening links
 
-// Initialize Telegram Bot
+// Initialize database connection (Example: PostgreSQL)
+const db = new Client({
+  host: databaseHost,
+  user: databaseUser,
+  password: databasePassword,
+  database: databaseName
+});
+db.connect();
+
+// Create the Telegram bot instance
 const bot = new TelegramBot(botToken, { polling: true });
 
-// Connect to the database (MongoDB in this case)
-mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Database connected'))
-  .catch(err => console.error('Database connection failed:', err));
-
-// Define a user schema for MongoDB (you can expand this based on your needs)
-const userSchema = new mongoose.Schema({
-  chatId: { type: Number, required: true, unique: true },
-  username: { type: String, required: true },
-  apiToken: { type: String, required: true },
-  isInSupportChannel: { type: Boolean, default: false },
-});
-const User = mongoose.model('User', userSchema);
-
-// Command: /start
+// Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
-  const welcomeMessage = `Hello, ${username}! 👋\n\n`
-    + 'Welcome to the AdLinkFly URL Shortener Bot! 🚀\n\n'
-    + 'Before using the bot, please make sure you are a member of our support channel: \n'
-    + `${supportChannelLink}\n\n`
-    + 'To get started, please log in using the command: /login';
 
-  bot.sendMessage(chatId, welcomeMessage);
+  const welcome = welcomeMessage || `Hello, ${username}! Welcome to the ${siteName} Shortener Bot! Please use the commands below to get started.`;
+  bot.sendMessage(chatId, welcome);
 });
 
-// Command: /login
-bot.onText(/\/login/, (msg) => {
+// Handle /help command
+bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Please enter your username and password (e.g., username password) to log in.');
+  const helpMessage = `📚 *Help & FAQ* 🤖
+
+To start using the bot:
+
+1. Register at [${siteName}](${siteUrl}) to get your API Token.
+2. Add your API token with the /api command: \`/api YOUR_API_TOKEN\`
+3. Paste any link to shorten it.
+4. To see stats, use the /stats command.
+
+Join our support channel: [Support Channel](${supportChannelLink})`;
+
+  bot.sendMessage(chatId, helpMessage, {
+    parse_mode: 'Markdown',
+    disable_web_page_preview: false
+  });
 });
 
-// Handle login details (username password)
-bot.on('message', async (msg) => {
+// Handle /api command to store user's API token
+bot.onText(/\/api (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const messageText = msg.text;
+  const userToken = match[1].trim();
 
-  // Check if the message is a login request (username password)
-  if (messageText && messageText.includes(' ')) {
-    const [username, password] = messageText.split(' ');
-
-    // Verify user credentials with your website’s database
-    try {
-      const response = await axios.post(`${websiteUrl}/api/verify-login`, { username, password });
-      
-      if (response.data.success) {
-        const userApiToken = response.data.token;
-
-        // Check if the user is in the support channel
-        const isMember = await bot.getChatMember(supportChannelLink, chatId);
-        if (isMember.status === 'member' || isMember.status === 'administrator') {
-          // Save the user credentials (username and apiToken) in the database
-          let user = await User.findOne({ chatId });
-          if (!user) {
-            user = new User({ chatId, username, apiToken: userApiToken });
-          } else {
-            user.apiToken = userApiToken;
-          }
-          await user.save();
-
-          bot.sendMessage(chatId, `Welcome back, ${username}! You are successfully logged in.`);
-        } else {
-          bot.sendMessage(chatId, 'You must be a member of the support channel to use this bot. Please join the channel first: ' + supportChannelLink);
-        }
-      } else {
-        bot.sendMessage(chatId, 'Invalid username or password. Please try again or register on the website.');
-      }
-    } catch (error) {
-      console.error('Error logging in:', error);
-      bot.sendMessage(chatId, 'There was an error logging in. Please try again later.');
-    }
-  }
-});
-
-// Handle any message that is a URL
-bot.on('message', async (msg) => {
-  const chatId = msg.chat.id;
-  const messageText = msg.text;
-
-  // If the message is a link, handle demo shortening or logged-in shortening
-  if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
-    // Get the user's data from the database
-    const user = await User.findOne({ chatId });
-
-    if (!user) {
-      // If the user is not logged in, show demo shortening
-      try {
-        const demoResponse = await axios.get(`${demoApiUrl}?url=${messageText}`);
-        const demoShortenedUrl = demoResponse.data.shortenedUrl;
-        bot.sendMessage(chatId, `Demo Shortened URL: ${demoShortenedUrl}\n\n`
-          + 'To earn and monitor your earnings, please log in using /login or create an account on our website.');
-      } catch (error) {
-        console.error('Error with demo shortening:', error);
-        bot.sendMessage(chatId, 'There was an error shortening your URL. Please try again later.');
-      }
+  // Save the API token to the database
+  saveUserToken(chatId, userToken, (success) => {
+    if (success) {
+      bot.sendMessage(chatId, `Your API token has been successfully set!`);
     } else {
-      // If the user is logged in, shorten the URL using their API token
-      try {
-        const response = await axios.get(`${websiteUrl}/api/shorten?api_key=${user.apiToken}&url=${messageText}`);
-        const shortUrl = response.data.shortenedUrl;
-        bot.sendMessage(chatId, `Here’s your shortened URL: ${shortUrl}`);
-      } catch (error) {
-        console.error('Error shortening URL:', error);
-        bot.sendMessage(chatId, 'There was an error shortening your URL. Please try again later.');
-      }
+      bot.sendMessage(chatId, `An error occurred while saving your token. Please try again.`);
     }
+  });
+});
+
+// Handle messages (shortening URLs or demo service)
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const messageText = msg.text;
+
+  if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
+    // Check if the user has set their API token
+    getUserToken(chatId, (userToken) => {
+      if (!userToken) {
+        // Offer demo shortening if no token set
+        shortenUrlUsingDemoApi(chatId, messageText);
+      } else {
+        // Proceed with the user's API token and shorten the link
+        shortenUrl(chatId, userToken, messageText);
+      }
+    });
   }
 });
 
-// Function to show error and guidance messages
-function showErrorAndHelp(chatId, errorMessage) {
-  bot.sendMessage(chatId, `${errorMessage}\n\nIf you're unsure how to proceed, please visit our website for help or contact support.`);
+// Function to shorten URL using the demo API (for users who haven't logged in)
+function shortenUrlUsingDemoApi(chatId, Url) {
+  axios.get(`${demoApiUrl}?url=${Url}`)
+    .then(response => {
+      const demoShortenedUrl = response.data.shortenedUrl;
+      bot.sendMessage(chatId, `Demo Shortened URL: ${demoShortenedUrl}\n\nTo get started and track earnings, please register on the site and provide your own API token.`);
+    })
+    .catch(error => {
+      console.error('Demo URL Shorten Error:', error);
+      bot.sendMessage(chatId, `An error occurred while shortening the URL. Please try again later.`);
+    });
 }
 
-// Additional Error Handling (Optional, for bot interactions)
-bot.on("polling_error", (err) => {
-  console.error("Polling error:", err);
+// Function to shorten URL using the site's API (using the API token)
+function shortenUrl(chatId, apiToken, Url) {
+  const encodedUrl = encodeURIComponent(Url);
+  const apiUrl = `${siteApiUrl}?api=${apiToken}&url=${encodedUrl}&alias=CustomAlias`;  // Base API URL from environment variable
+
+  // Request to the site's API to shorten the URL
+  axios.get(apiUrl)
+    .then(response => {
+      if (response.data.status === 'success') {
+        const shortenedUrl = response.data.shortenedUrl;
+        bot.sendMessage(chatId, `Shortened URL: ${shortenedUrl}`);
+      } else {
+        bot.sendMessage(chatId, `An error occurred: ${response.data.message}. Please check your API token and try again.`);
+      }
+    })
+    .catch(error => {
+      console.error('API Error:', error);
+      bot.sendMessage(chatId, `An error occurred while shortening the URL. Please try again later.`);
+    });
+}
+
+// Function to save the user's API token to the database
+function saveUserToken(chatId, apiToken, callback) {
+  const query = 'INSERT INTO users (chatId, apiToken) VALUES ($1, $2) ON CONFLICT (chatId) DO UPDATE SET apiToken = $2';
+  db.query(query, [chatId, apiToken], (err) => {
+    if (err) {
+      console.error('Database Error:', err);
+      callback(false);
+    } else {
+      callback(true);
+    }
+  });
+}
+
+// Function to get the user's API token from the database
+function getUserToken(chatId, callback) {
+  const query = 'SELECT apiToken FROM users WHERE chatId = $1';
+  db.query(query, [chatId], (err, res) => {
+    if (err || res.rows.length === 0) {
+      callback(null);
+    } else {
+      callback(res.rows[0].apiToken);
+    }
+  });
+}
+
+bot.on('polling_error', (error) => {
+  console.log('Polling error:', error);
+});
+
+// Handle database connection issues
+db.on('error', (err) => {
+  console.error('Database Connection Error:', err);
 });
