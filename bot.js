@@ -1,12 +1,14 @@
+require('dotenv').config(); // Load environment variables from .env
+
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
 const express = require('express');
 const app = express();
 
-// Web server redirect
+// Web server redirect using the environment variable for the URL
 app.get('/', (req, res) => {
-  res.redirect('https://snipn.cc/');
+  res.redirect(process.env.WEBSITE_URL); // Dynamically use the URL from .env
 });
 
 const port = 8000;
@@ -22,7 +24,6 @@ const bot = new TelegramBot(botToken, { polling: true });
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
-
   const welcomeMessage = `Howdy🤝, ${username}!🌟\n\n`
     + 'I’m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
     + 'Just send me the link you want to shorten, type or paste the URL directly, and I’ll take care of the rest.😜\n\n'
@@ -45,17 +46,17 @@ bot.onText(/\/start/, (msg) => {
 // /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  const helpMessage = `📚 *Snipn.cc Bot Help & FAQ* 🤖
+  const helpMessage = `📚 *${process.env.WEBSITE_NAME} Bot Help & FAQ* 🤖
 
 Here's how you can get started and start earning:
 
-🔹 *1. Create an Account on Snipn.cc*
-   - Go to [https://snipn.cc/register](https://snipn.cc/register)
+🔹 *1. Create an Account on ${process.env.WEBSITE_NAME}*
+   - Go to [${process.env.WEBSITE_URL}/register](${process.env.WEBSITE_URL}/register)
    - Fill in your details and register your free account.
    - After logging in, go to *Dashboard > Tools > API*.
 
 🔹 *2. Get Your API Token*
-   - Visit: [https://snipn.cc/member/tools/api](https://snipn.cc/member/tools/api)
+   - Visit: [${process.env.WEBSITE_URL}/member/tools/api](${process.env.WEBSITE_URL}/member/tools/api)
    - Copy your unique *API Token*.
 
 🔹 *3. Add API Token to This Bot*
@@ -64,14 +65,14 @@ Here's how you can get started and start earning:
 
 🔹 *4. Shorten and Share Links*
    - Just paste any link (starting with http or https) into this chat.
-   - The bot will shorten it using your Snipn account.
+   - The bot will shorten it using your ${process.env.WEBSITE_NAME} account.
    - Share this shortened link on social media, websites, or blogs.
 
 💰 *Earn Money*
    - You earn up to **$20 per 1,000 clicks**.
    - More shares = More clicks = More earnings!
 
-Need more help? Visit [https://snipn.cc/contact](https://snipn.cc/contact)
+Need more help? Visit [${process.env.WEBSITE_URL}/contact](${process.env.WEBSITE_URL}/contact)
 
 Start shortening and earning now! 💸`;
 
@@ -88,7 +89,7 @@ bot.on('callback_query', async (callbackQuery) => {
   const data = callbackQuery.data;
 
   if (data === 'try_demo') {
-    bot.sendMessage(chatId, 'To try the demo, use:\n\n`/demo YOUR_URL`\n\nThis will shorten your link using a demo account. ⚠️ You won’t earn from this. To start earning, sign up at https://snipn.cc and provide your API using `/api YOUR_TOKEN`.', {
+    bot.sendMessage(chatId, 'To try the demo, use:\n\n`/demo YOUR_URL`\n\nThis will shorten your link using a demo account. ⚠️ You won’t earn from this. To start earning, sign up at ' + process.env.WEBSITE_URL + ' and provide your API using `/api YOUR_TOKEN`.', {
       parse_mode: 'Markdown'
     });
   } else if (data === 'help_info') {
@@ -105,7 +106,7 @@ bot.onText(/\/api (.+)/, (msg, match) => {
 
   saveUserToken(chatId, userToken);
 
-  const response = `✅ Snipn API token set successfully.\nYour token: ${userToken}`;
+  const response = `✅ ${process.env.WEBSITE_NAME} API token set successfully.\nYour token: ${userToken}`;
   bot.sendMessage(chatId, response);
 });
 
@@ -120,14 +121,14 @@ bot.onText(/\/demo (.+)/, async (msg, match) => {
   }
 
   try {
-    const demoToken = 'e2a11f2b541ac72e65adb01b0d519a8567d5cd55';
+    const demoToken = process.env.DEMO_API_TOKEN;
     const encodedUrl = encodeURIComponent(demoUrl);
-    const apiUrl = `https://snipn.cc/api?api=${demoToken}&url=${encodedUrl}&format=text&type=1`;
+    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${demoToken}&url=${encodedUrl}&format=text&type=1`;
 
     const response = await axios.get(apiUrl);
     const shortUrl = response.data;
 
-    bot.sendMessage(chatId, `✅ *Demo Shortened URL:*\n${shortUrl}\n\n⚠️ This is just a demo. You won’t earn from this. To start earning, [sign up at Snipn](https://snipn.cc/auth/signup) and use your API token with \`/api YOUR_TOKEN\`.`, {
+    bot.sendMessage(chatId, `✅ *Demo Shortened URL:*\n${shortUrl}\n\n⚠️ This is just a demo. You won’t earn from this. To start earning, [sign up at ${process.env.WEBSITE_URL}/auth/signup](${process.env.WEBSITE_URL}/auth/signup) and use your API token with \`/api YOUR_TOKEN\`.`, {
       parse_mode: 'Markdown',
       disable_web_page_preview: false
     });
@@ -159,7 +160,7 @@ async function shortenUrlAndSend(chatId, Url) {
   }
 
   try {
-    const apiUrl = `https://snipn.cc/api?api=${arklinksToken}&url=${Url}`;
+    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${Url}`;
     const response = await axios.get(apiUrl);
     const shortUrl = response.data.shortenedUrl || response.data;
 
@@ -167,7 +168,7 @@ async function shortenUrlAndSend(chatId, Url) {
     bot.sendMessage(chatId, responseMessage);
   } catch (error) {
     console.error('Shorten URL Error:', error);
-    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token](https://snipn.cc/member/tools/api), then try again.', {
+    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token](${process.env.WEBSITE_URL}/member/tools/api), then try again.', {
       parse_mode: 'Markdown'
     });
   }
