@@ -1,27 +1,49 @@
 require('dotenv').config(); // Load environment variables from .env
-
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
-
 const express = require('express');
 const app = express();
+
+// Retrieve the Telegram bot token from the environment variable
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+const bot = new TelegramBot(botToken, { polling: false }); // Disable polling since we're using webhook
 
 // Web server redirect using the environment variable for the URL
 app.get('/', (req, res) => {
   res.redirect(process.env.WEBSITE_URL); // Dynamically use the URL from .env
 });
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+
+  // Automatically detect the base URL and set the webhook
+  const getBaseUrl = (req) => {
+    const protocol = req.protocol || 'https'; // Default to 'https' if not available
+    const host = req.get('host');  // Get the host (e.g., 'your-app.onrender.com')
+    return `${protocol}://${host}`;  // Construct the full base URL (https://your-app.onrender.com)
+  };
+
+  app.post('/webhook', express.json(), (req, res) => {
+    const webhookUrl = getBaseUrl(req) + '/webhook';  // Build the dynamic webhook URL
+    bot.setWebHook(webhookUrl)
+      .then(() => {
+        console.log(`Webhook set to: ${webhookUrl}`);
+      })
+      .catch((err) => {
+        console.error('Error setting webhook:', err);
+      });
+    res.sendStatus(200);  // Respond with 200 OK to Telegram
+  });
 });
 
-// Retrieve the Telegram bot token from the environment variable
-const botToken = process.env.TELEGRAM_BOT_TOKEN;
-
-// Create the Telegram bot instance
-const bot = new TelegramBot(botToken, { polling: true })
+// Handle incoming updates via webhook
+app.post('/webhook', express.json(), (req, res) => {
+  const update = req.body;  // Get the update data from Telegram
+  bot.processUpdate(update);  // Process the incoming update
+  res.sendStatus(200);  // Respond with 200 OK to Telegram
+});
 
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
@@ -32,12 +54,12 @@ bot.onText(/\/start/, (msg) => {
     + 'Just send me the link you want to shorten, type or paste the URL directly, and I\'ll take care of the rest.😜\n\n'
     + 'Let\'s get started! 💸👇\n\n'
     + 'How To Use Me 👇👇 \n\n'
-    + '✅1. Got To ${process.env.WEBSITE_NAME} & Complete Your Registration.\n\n'
+    + '✅1. Go To ${process.env.WEBSITE_NAME} & Complete Your Registration.\n\n'
     + '✅2. Then Copy Your API Key Only. \n\n'
     + '✅3. Then add your API to this bot using command /api \n\n' 
     + 'Example: /api 7d035d0a298dae4987b94d63294f564c26accf66\n\n'
     + '⚠️ After setting up the api, send any link in the format https:// or http:// and let me do the shortening for you.\n\n'
-    + '👀 *Not ready to register yet? Try the demo or click the help button for detailed guide!*';
+    + '👀 *Not ready to register yet? Try the demo or click the help button for a detailed guide!*';
 
   const options = {
     reply_markup: {
@@ -169,44 +191,32 @@ async function shortenUrlAndSend(chatId, Url) {
   }
 
   try {
-    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${Url}`;
+    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${encodeURIComponent(Url)}&format=text&type=1`;
     const response = await axios.get(apiUrl);
-    const shortUrl = response.data.shortenedUrl || response.data;
+    const shortUrl = response.data;
 
-    const responseMessage = `✅ Shortened URL: ${shortUrl}`;
-    bot.sendMessage(chatId, responseMessage);
-  } catch (error) {
-    console.error('Shorten URL Error:', error);
-    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check and confirm that you entered [your correct Snipn API token](${process.env.WEBSITE_URL}/member/tools/api), then try again.', {
+    bot.sendMessage(chatId, `✅ *Shortened URL:* \n${shortUrl}`, {
       parse_mode: 'Markdown'
     });
-  }
-}
-
-// Validate URL format
-function isValidUrl(url) {
-  const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
-  return urlPattern.test(url);
-}
-
-// Save token to JSON file
-function saveUserToken(chatId, token) {
-  const dbData = getDatabaseData();
-  dbData[chatId] = token;
-  fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
-}
-
-// Retrieve user token
-function getUserToken(chatId) {
-  const dbData = getDatabaseData();
-  return dbData[chatId];
-}
-
-// Read DB file
-function getDatabaseData() {
-  try {
-    return JSON.parse(fs.readFileSync('database.json', 'utf8'));
   } catch (error) {
-    return {};
+    console.error('Shortening Error:', error.message);
+    bot.sendMessage(chatId, '⚠️ An error occurred while shortening the link. Please try again later.');
   }
+}
+
+// Helper function to validate URLs
+function isValidUrl(url) {
+  const regex = /^(http:\/\/|https:\/\/)/;
+  return regex.test(url);
+}
+
+// Dummy function for saving user tokens (you can replace with database logic)
+let userTokens = {};
+
+function saveUserToken(chatId, token) {
+  userTokens[chatId] = token;
+}
+
+function getUserToken(chatId) {
+  return userTokens[chatId];
 }
