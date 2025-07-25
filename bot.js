@@ -153,7 +153,7 @@ async function shortenUrlAndSend(chatId, Url) {
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, '⚠️ Please provide your SNIPN API token first. Use the command:\n`/api YOUR_SNIPN_API_TOKEN`', {
+    bot.sendMessage(chatId, '⚠️ Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command:\n`/api YOUR_API_TOKEN`', {
       parse_mode: 'Markdown'
     });
     return;
