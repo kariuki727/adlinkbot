@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
+require('dotenv').config(); // Ensure environment variables are loaded
 
 const express = require('express');
 const app = express();
@@ -66,7 +67,7 @@ Here's how you can get started and start earning:
 
 🔹 *3. Add API Token to This Bot*
    - Use the command: \`/api YOUR_API_TOKEN\`
-   - Example: \`/api 7d035d0a298dae4987b94d63294f564c26accf66\``;
+   - Example: \`/api 7d035d0a298dae4987b94d63294f564c26accf66\`
 
 🔹 *4. Shorten and Share Links*
    - Just paste any link (starting with http or https) into this chat.
@@ -86,7 +87,6 @@ Start shortening and earning now! 💸`;
     disable_web_page_preview: false
   });
 });
-
 
 // Command: /api
 bot.onText(/\/api (.+)/, (msg, match) => {
@@ -116,7 +116,7 @@ bot.onText(/\/demo (.+)/, async (msg, match) => {
     const apiUrl = `${process.env.WEBSITE_URL}/api?api=${demoToken}&url=${encodedUrl}&format=text&type=1`;
 
     const response = await axios.get(apiUrl);
-    const shortUrl = response.data;
+    const shortUrl = response.data.shortenedUrl;
 
     bot.sendMessage(chatId, `✅ *Demo Shortened URL:*\n${shortUrl}\n\n⚠️ This is just a demo. You won’t earn from this. To start earning, [sign up at ${process.env.WEBSITE_URL}/auth/signup](${process.env.WEBSITE_URL}/auth/signup) and use your API token with \`/api YOUR_TOKEN\`.`, {
       parse_mode: 'Markdown',
@@ -128,7 +128,6 @@ bot.onText(/\/demo (.+)/, async (msg, match) => {
   }
 });
 
-
 // Listen for any message (not just commands)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
@@ -136,7 +135,7 @@ bot.on('message', (msg) => {
 
   // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
   if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
-    shortenUrlAndSend(chatId, messageText);
+    shortenUrlAndSend(chatId, messageText.trim());
   }
 });
 
@@ -146,7 +145,7 @@ async function shortenUrlAndSend(chatId, Url) {
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, 'Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command: /api YOUR_API_TOKEN');
+    bot.sendMessage(chatId, `Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command: /api YOUR_API_TOKEN`);
     return;
   }
 
@@ -156,7 +155,6 @@ async function shortenUrlAndSend(chatId, Url) {
     // Make a request to the API to shorten the URL
     const response = await axios.get(apiUrl);
     const shortUrl = response.data.shortenedUrl;
-
 
     const responseMessage = `Shortened URL: ${shortUrl}`;
     bot.sendMessage(chatId, responseMessage);
@@ -176,7 +174,11 @@ function isValidUrl(url) {
 function saveUserToken(chatId, token) {
   const dbData = getDatabaseData();
   dbData[chatId] = token;
-  fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
+  fs.writeFile('database.json', JSON.stringify(dbData, null, 2), (err) => {
+    if (err) {
+      console.error("Error writing to file", err);
+    }
+  });
 }
 
 // Function to retrieve user's API token from the database
