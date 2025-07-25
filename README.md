@@ -55,3 +55,8 @@ DATABASE_NAME=your-database-name
 
 # Welcome message to display on /start command
 WELCOME_MESSAGE=Welcome to ${SITE_NAME} Shortener Bot! Use /api to add your API token and start shortening links.
+
+
+### **Developed with ❤️ by KARIUKI**
+**Sponsored by Briceka Enterprise**
+
