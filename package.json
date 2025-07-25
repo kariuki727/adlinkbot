@@ -1,19 +1,19 @@
 {
   "name": "adlinkbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Telegram bot for shortening URLs with AdLinkFly integration",
   "main": "bot.js",
   "scripts": {
+    "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["telegram", "bot", "url-shortener", "adlinkfly"],
+  "author": "Kariuki",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.9",
-    "dotenv",
+    "dotenv": "^16.0.0",  // Specify a version for dotenv
     "express": "^4.21.2",
-    "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.66.0"
   }
 }
