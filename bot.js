@@ -1,31 +1,26 @@
-require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
-const { Client } = require('pg');  // PostgreSQL example; or mysql2 for MySQL
 const fs = require('fs');
+const express = require('express');
+const dotenv = require('dotenv');
 
-// Load environment variables
-const botToken = process.env.TELEGRAM_BOT_TOKEN;
-const demoApiUrl = process.env.DEMO_API_URL;  // Demo API URL from environment
-const supportChannelLink = process.env.SUPPORT_CHANNEL_LINK;
-const siteUrl = process.env.SITE_URL;  // Site URL from environment
-const siteName = process.env.SITE_NAME;  // Site name from environment
-const apiToken = process.env.API_TOKEN;  // Site's default API token if needed
-const databaseHost = process.env.DATABASE_HOST;
-const databaseUser = process.env.DATABASE_USERNAME;
-const databasePassword = process.env.DATABASE_PASSWORD;
-const databaseName = process.env.DATABASE_NAME;
-const welcomeMessage = process.env.WELCOME_MESSAGE;
-const siteApiUrl = process.env.SITE_API_URL;  // Base API URL for shortening links
+// Load environment variables from .env file
+dotenv.config();
 
-// Initialize database connection (Example: PostgreSQL)
-const db = new Client({
-  host: databaseHost,
-  user: databaseUser,
-  password: databasePassword,
-  database: databaseName
+const app = express();
+
+// Redirect to the site link stored in environment variable
+app.get('/', (req, res) => {
+  res.redirect(process.env.SITE_LINK);
 });
-db.connect();
+
+const port = 8000;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+// Retrieve the Telegram bot token from the environment variable
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
 // Create the Telegram bot instance
 const bot = new TelegramBot(botToken, { polling: true });
@@ -35,23 +30,48 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
 
-  const welcome = welcomeMessage || `Hello, ${username}! Welcome to the ${siteName} Shortener Bot! Please use the commands below to get started.`;
-  bot.sendMessage(chatId, welcome);
+  // Fetch the welcome message from the environment variable
+  const welcomeMessage = process.env.WELCOME_MESSAGE.replace("{username}", username)
+    .replace("{site_name}", process.env.SITE_NAME)
+    .replace("{site_link}", process.env.SITE_LINK);
+
+  bot.sendMessage(chatId, welcomeMessage);
 });
 
 // Handle /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  const helpMessage = `📚 *Help & FAQ* 🤖
 
-To start using the bot:
+  // Fetch the help message from the environment variable
+  const helpMessage = `📚 *${process.env.SITE_NAME} Bot Help & FAQ* 🤖
 
-1. Register at [${siteName}](${siteUrl}) to get your API Token.
-2. Add your API token with the /api command: \`/api YOUR_API_TOKEN\`
-3. Paste any link to shorten it.
-4. To see stats, use the /stats command.
+Here's how you can get started and start earning:
 
-Join our support channel: [Support Channel](${supportChannelLink})`;
+🔹 *1. Create an Account on ${process.env.SITE_NAME}*
+   - Go to [${process.env.SITE_LINK}register](${process.env.SITE_LINK}register)
+   - Fill in your details and register your free account.
+   - After logging in, go to *Dashboard > Tools > API*.
+
+🔹 *2. Get Your API Token*
+   - Visit: [${process.env.SITE_LINK}member/tools/api](${process.env.SITE_LINK}member/tools/api)
+   - Copy your unique *API Token*.
+
+🔹 *3. Add API Token to This Bot*
+   - Use the command: \`/api YOUR_API_TOKEN\`
+   - Example: \`/api 123abc456xyz789\`
+
+🔹 *4. Shorten and Share Links*
+   - Just paste any link (starting with http or https) into this chat.
+   - The bot will shorten it using your ${process.env.SITE_NAME} account.
+   - Share this shortened link on social media, websites, or blogs.
+
+💰 *Earn Money*
+   - You earn up to **$5 per 1,000 views**.
+   - More shares = More Views = More earnings!
+
+Need more help? Visit [${process.env.SITE_LINK}contact](${process.env.SITE_LINK}contact)
+
+Start shortening and earning now! 💸`;
 
   bot.sendMessage(chatId, helpMessage, {
     parse_mode: 'Markdown',
@@ -59,104 +79,79 @@ Join our support channel: [Support Channel](${supportChannelLink})`;
   });
 });
 
-// Handle /api command to store user's API token
+// Command: /api
 bot.onText(/\/api (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const userToken = match[1].trim();
+  const userToken = match[1].trim(); // Get the API token provided by the user
 
-  // Save the API token to the database
-  saveUserToken(chatId, userToken, (success) => {
-    if (success) {
-      bot.sendMessage(chatId, `Your API token has been successfully set!`);
-    } else {
-      bot.sendMessage(chatId, `An error occurred while saving your token. Please try again.`);
-    }
-  });
+  // Save the user's Flame Url API token to the database
+  saveUserToken(chatId, userToken);
+
+  const response = `${process.env.SITE_NAME} API token set successfully. Your token: ${userToken}`;
+  bot.sendMessage(chatId, response);
 });
 
-// Handle messages (shortening URLs or demo service)
+// Listen for any message (not just commands)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
+  // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
   if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
-    // Check if the user has set their API token
-    getUserToken(chatId, (userToken) => {
-      if (!userToken) {
-        // Offer demo shortening if no token set
-        shortenUrlUsingDemoApi(chatId, messageText);
-      } else {
-        // Proceed with the user's API token and shorten the link
-        shortenUrl(chatId, userToken, messageText);
-      }
-    });
+    shortenUrlAndSend(chatId, messageText);
   }
 });
 
-// Function to shorten URL using the demo API (for users who haven't logged in)
-function shortenUrlUsingDemoApi(chatId, Url) {
-  axios.get(`${demoApiUrl}?url=${Url}`)
-    .then(response => {
-      const demoShortenedUrl = response.data.shortenedUrl;
-      bot.sendMessage(chatId, `Demo Shortened URL: ${demoShortenedUrl}\n\nTo get started and track earnings, please register on the site and provide your own API token.`);
-    })
-    .catch(error => {
-      console.error('Demo URL Shorten Error:', error);
-      bot.sendMessage(chatId, `An error occurred while shortening the URL. Please try again later.`);
-    });
+// Function to shorten the URL and send the result
+async function shortenUrlAndSend(chatId, Url) {
+  // Retrieve the user's Flame Url API token from the database
+  const arklinksToken = getUserToken(chatId);
+
+  if (!arklinksToken) {
+    bot.sendMessage(chatId, `Please provide your ${process.env.SITE_NAME} API token first. Use the command: /api YOUR_${process.env.SITE_NAME}_API_TOKEN`);
+    return;
+  }
+
+  try {
+    const apiUrl = `${process.env.SITE_LINK}api?api=${arklinksToken}&url=${Url}`;
+
+    // Make a request to the Flame Url API to shorten the URL
+    const response = await axios.get(apiUrl);
+    const shortUrl = response.data.shortenedUrl;
+
+    const responseMessage = `Shortened URL: ${shortUrl}`;
+    bot.sendMessage(chatId, responseMessage);
+  } catch (error) {
+    console.error('Shorten URL Error:', error);
+    bot.sendMessage(chatId, `An error occurred while shortening the URL. Please check and confirm that you entered [your correct ${process.env.SITE_NAME} API token ](${process.env.SITE_LINK}member/tools/api), then try again.`);
+  }
 }
 
-// Function to shorten URL using the site's API (using the API token)
-function shortenUrl(chatId, apiToken, Url) {
-  const encodedUrl = encodeURIComponent(Url);
-  const apiUrl = `${siteApiUrl}?api=${apiToken}&url=${encodedUrl}&alias=CustomAlias`;  // Base API URL from environment variable
-
-  // Request to the site's API to shorten the URL
-  axios.get(apiUrl)
-    .then(response => {
-      if (response.data.status === 'success') {
-        const shortenedUrl = response.data.shortenedUrl;
-        bot.sendMessage(chatId, `Shortened URL: ${shortenedUrl}`);
-      } else {
-        bot.sendMessage(chatId, `An error occurred: ${response.data.message}. Please check your API token and try again.`);
-      }
-    })
-    .catch(error => {
-      console.error('API Error:', error);
-      bot.sendMessage(chatId, `An error occurred while shortening the URL. Please try again later.`);
-    });
+// Function to validate the URL format
+function isValidUrl(url) {
+  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
+  return urlPattern.test(url);
 }
 
-// Function to save the user's API token to the database
-function saveUserToken(chatId, apiToken, callback) {
-  const query = 'INSERT INTO users (chatId, apiToken) VALUES ($1, $2) ON CONFLICT (chatId) DO UPDATE SET apiToken = $2';
-  db.query(query, [chatId, apiToken], (err) => {
-    if (err) {
-      console.error('Database Error:', err);
-      callback(false);
-    } else {
-      callback(true);
-    }
-  });
+// Function to save user's Flame Url API token to the database (Replit JSON database)
+function saveUserToken(chatId, token) {
+  const dbData = getDatabaseData();
+  dbData[chatId] = token;
+  fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
 }
 
-// Function to get the user's API token from the database
-function getUserToken(chatId, callback) {
-  const query = 'SELECT apiToken FROM users WHERE chatId = $1';
-  db.query(query, [chatId], (err, res) => {
-    if (err || res.rows.length === 0) {
-      callback(null);
-    } else {
-      callback(res.rows[0].apiToken);
-    }
-  });
+// Function to retrieve user's Flame Url API token from the database
+function getUserToken(chatId) {
+  const dbData = getDatabaseData();
+  return dbData[chatId];
 }
 
-bot.on('polling_error', (error) => {
-  console.log('Polling error:', error);
-});
-
-// Handle database connection issues
-db.on('error', (err) => {
-  console.error('Database Connection Error:', err);
-});
+// Function to read the database file and parse the JSON data
+function getDatabaseData() {
+  try {
+    return JSON.parse(fs.readFileSync('database.json', 'utf8'));
+  } catch (error) {
+    // Return an empty object if the file doesn't exist or couldn't be parsed
+    return {};
+  }
+}
