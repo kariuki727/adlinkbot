@@ -22,6 +22,30 @@ Track Stats:
    * You don't need to download anything for most cases (except: you are deploying this in your own custom server directly)
    * For Custom Server deployment (direct) Download the Latest ZIP from Releases Section
 
+# Telegram Bot Token
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token-here
+
+# Site's API URL for shortening
+SITE_API_URL=https://yoursite.com/api
+
+# Demo API URL for users who haven't provided their token
+DEMO_API_URL=https://your-demo-api-url.com/shorten
+
+# Site details
+SITE_URL=https://yoursite.com
+SITE_NAME=YourSiteNameHere
+SUPPORT_CHANNEL_LINK=https://t.me/your-support-channel
+
+# Database credentials
+DATABASE_HOST=your-database-host
+DATABASE_USERNAME=your-database-username
+DATABASE_PASSWORD=your-database-password
+DATABASE_NAME=your-database-name
+
+# Welcome message
+WELCOME_MESSAGE=Welcome to ${SITE_NAME} Shortener Bot! Use /api to add your API token and start shortening links.
+
+
      ### **🏷️ Features:**
 
 * Easy to Integrate and Customiseable (All-in-One Config File!)
