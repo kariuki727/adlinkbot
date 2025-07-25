@@ -1,42 +1,24 @@
-console.log("TELEGRAM_BOT_TOKEN:", process.env.TELEGRAM_BOT_TOKEN);
-console.log("WEBSITE_URL:", process.env.WEBSITE_URL);
-console.log("WEBSITE_NAME:", process.env.WEBSITE_NAME);
-
-require('dotenv').config(); // Load environment variables from .env
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
+
 const express = require('express');
 const app = express();
 
-// Retrieve the Telegram bot token from the environment variable
-const botToken = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(botToken, { polling: false }); // Disable polling since we're using webhook
-
-// Web server redirect using the environment variable for the URL
 app.get('/', (req, res) => {
-  res.redirect(process.env.WEBSITE_URL); // Dynamically use the URL from .env
+  res.redirect(process.env.WEBSITE_URL);
 });
 
-const port = process.env.PORT || 8000;
+const port = 8000;
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-
-  const getBaseUrl = () => {
-    const protocol = 'https'; // assuming https
-    const host = process.env.HOST || 'your-app.onrender.com';  // Make sure this is correct in your .env
-    return `${protocol}://${host}`; 
-  };
-
-  const webhookUrl = getBaseUrl() + '/webhook';  // Build the dynamic webhook URL
-  bot.setWebHook(webhookUrl)
-    .then(() => {
-      console.log(`Webhook set to: ${webhookUrl}`);
-    })
-    .catch((err) => {
-      console.error('Error setting webhook:', err);
-    });
 });
+
+// Retrieve the Telegram bot token from the environment variable
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+// Create the Telegram bot instance
+const bot = new TelegramBot(botToken, { polling: true });
 
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
@@ -57,8 +39,7 @@ bot.onText(/\/start/, (msg) => {
   const options = {
     reply_markup: {
       inline_keyboard: [
-        [{ text: '🚀 Try Demo', callback_data: 'try_demo' }],
-        [{ text: '📚 Help', callback_data: 'help_info' }]
+        [{ text: '🚀 Try Demo', callback_data: 'try_demo' }]
       ]
     },
     parse_mode: 'Markdown'
@@ -67,7 +48,7 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, welcomeMessage, options); // Send the message with the keyboard properly formatted
 });
 
-// /help command
+// Handle /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
   const helpMessage = `📚 *${process.env.WEBSITE_NAME} Bot Help & FAQ* 🤖
@@ -106,28 +87,13 @@ Start shortening and earning now! 💸`;
   });
 });
 
-// Handle inline button callbacks
-bot.on('callback_query', async (callbackQuery) => {
-  const msg = callbackQuery.message;
-  const chatId = msg.chat.id;
-  const data = callbackQuery.data;
 
-  if (data === 'try_demo') {
-    bot.sendMessage(chatId, 'To try the demo, use:\n\n`/demo YOUR_URL`\n\nThis will shorten your link using a demo account. ⚠️ You won’t earn from this. To start earning, sign up at ' + process.env.WEBSITE_URL + ' and provide your API using `/api YOUR_TOKEN`.', {
-      parse_mode: 'Markdown'
-    });
-  } else if (data === 'help_info') {
-    bot.emit('text', { ...msg, text: '/help' });
-  }
-
-  bot.answerCallbackQuery(callbackQuery.id);
-});
-
-// /api command to store user token
+// Command: /api
 bot.onText(/\/api (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const userToken = match[1].trim();
+  const userToken = match[1].trim(); // Get the API token provided by the user
 
+  // Save the user's API token to the database
   saveUserToken(chatId, userToken);
 
   const response = `✅ ${process.env.WEBSITE_NAME} API token set successfully.\nYour token: ${userToken}`;
@@ -162,50 +128,51 @@ bot.onText(/\/demo (.+)/, async (msg, match) => {
   }
 });
 
-// Shorten URL if valid and API is set
+
+// Listen for any message (not just commands)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
+  // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
   if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
     shortenUrlAndSend(chatId, messageText);
   }
 });
 
-// Shorten URL using user token
+// Function to shorten the URL and send the result
 async function shortenUrlAndSend(chatId, Url) {
+  // Retrieve the user's API token from the database
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, `Please provide your ${process.env.WEBSITE_NAME} API token first. Use the command:\n\`/api YOUR_API_TOKEN\``, {
-      parse_mode: 'Markdown'
-    });
+    bot.sendMessage(chatId, 'your ${process.env.WEBSITE_NAME} API token first. Use the command: /api YOUR_API_TOKEN');
     return;
   }
 
-  const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${encodeURIComponent(Url)}`;
-
   try {
+    const apiUrl = `${process.env.WEBSITE_URL}/api?api=${arklinksToken}&url=${Url}`;
+
+    // Make a request to the API to shorten the URL
     const response = await axios.get(apiUrl);
-    if (response.status === 200) {
-      const shortUrl = response.data.shortenedUrl;
-      bot.sendMessage(chatId, `Shortened URL: ${shortUrl}`);
-    } else {
-      throw new Error('Unexpected response status: ' + response.status);
-    }
+    const shortUrl = response.data.shortenedUrl;
+
+
+    const responseMessage = `Shortened URL: ${shortUrl}`;
+    bot.sendMessage(chatId, responseMessage);
   } catch (error) {
-    console.error('Error during URL shortening:', error.message);
-    bot.sendMessage(chatId, '⚠️ An error occurred while shortening the link. Please try again later.');
+    console.error('Shorten URL Error:', error);
+    bot.sendMessage(chatId, '⚠️ An error occurred while shortening the link. Please try again.');
   }
 }
 
-// Helper function to validate URLs
+// Function to validate the URL format
 function isValidUrl(url) {
-  const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[a-zA-Z]{2,6}(\/[\w- .\/?%&=]*)?$/;
+  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
   return urlPattern.test(url);
 }
 
-// Dummy function for saving user tokens (you can replace with database logic)
+// Function to save user's API token to the database (Replit JSON database)
 function saveUserToken(chatId, token) {
   const dbData = getDatabaseData();
   dbData[chatId] = token;
