@@ -57,6 +57,6 @@ DATABASE_NAME=your-database-name
 WELCOME_MESSAGE=Welcome to ${SITE_NAME} Shortener Bot! Use /api to add your API token and start shortening links.
 ```
 
-### **Developed with ❤️ by KARIUKI**
-**Sponsored by Briceka Enterprise**
+### **Developed with ❤️ by [KARIUKI](https://github.com/kariuki727)**
+**Sponsored by [Briceka Enterprise](https://bricekainc.github.io/)**
 
