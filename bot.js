@@ -3,6 +3,7 @@ require('dotenv').config(); // Load environment variables from .env
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
+
 const express = require('express');
 const app = express();
 
@@ -16,19 +17,27 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Telegram bot token from environment
+// Retrieve the Telegram bot token from the environment variable
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(botToken, { polling: true });
 
-// /start command with inline buttons
+// Create the Telegram bot instance
+const bot = new TelegramBot(botToken, { polling: true })
+
+// Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
   const welcomeMessage = `Howdy🤝, ${username}!🌟\n\n`
-    + 'I’m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
-    + 'Just send me the link you want to shorten, type or paste the URL directly, and I’ll take care of the rest.😜\n\n'
-    + 'Let’s get started! 💸👇\n\n'
-    + '👀 *Not ready to register yet? Try the demo!*';
+    + 'I\'m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
+    + 'Just send me the link you want to shorten, type or paste the URL directly, and I\'ll take care of the rest.😜\n\n'
+    + 'Let\'s get started! 💸👇\n\n'
+    + 'How To Use Me 👇👇 \n\n'
+    + '✅1. Got To ${process.env.WEBSITE_NAME} & Complete Your Registration.\n\n'
+    + '✅2. Then Copy Your API Key Only. \n\n'
+    + '✅3. Then add your API to this bot using command /api \n\n' 
+    + 'Example: /api 7d035d0a298dae4987b94d63294f564c26accf66\n\n'
+    + '⚠️ After setting up the api, send any link in the format https:// or http:// and let me do the shortening for you.\n\n'
+    + '👀 *Not ready to register yet? Try the demo or click the help button for detailed guide!*';
 
   const options = {
     reply_markup: {
