@@ -16,7 +16,7 @@
     "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.66.0",
     "dotenv": "^10.0.0",
-    "uuid": "^8.3.2",        // Added uuid version 8.x.x
-    "node-fetch": "^3.2.0"   // Replacing deprecated request with node-fetch (optional)
+    "uuid": "^8.3.2",
+    "node-fetch": "^3.2.0"
   }
 }
