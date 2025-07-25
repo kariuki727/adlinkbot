@@ -30,7 +30,7 @@ bot.onText(/\/start/, (msg) => {
     + 'Let’s get started! 💸👇\n\n'
     + '👀 *Not ready to register yet? Try the demo!*';
 
-  const keyboard = {
+  const options = {
     reply_markup: {
       inline_keyboard: [
         [{ text: '🚀 Try Demo', callback_data: 'try_demo' }],
@@ -40,7 +40,7 @@ bot.onText(/\/start/, (msg) => {
     parse_mode: 'Markdown'
   };
 
-  bot.sendMessage(chatId, welcomeMessage, keyboard);
+  bot.sendMessage(chatId, welcomeMessage, options); // Send the message with the keyboard properly formatted
 });
 
 // /help command
