@@ -95,7 +95,7 @@ Here's how you can get started and start earning:
 
 🔹 *3. Add API Token to This Bot*
    - Use the command: \`/api YOUR_API_TOKEN\`
-   - Example: \`/api 123abc456xyz789\`
+   - Example: \`/api 7d035d0a298dae4987b94d63294f564c26accf66\`
 
 🔹 *4. Shorten and Share Links*
    - Just paste any link (starting with http or https) into this chat.
