@@ -168,7 +168,7 @@ async function shortenUrlAndSend(chatId, Url) {
 
 // Function to validate the URL format
 function isValidUrl(url) {
-  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
+  const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   return urlPattern.test(url);
 }
 
