@@ -1,3 +1,7 @@
+console.log("TELEGRAM_BOT_TOKEN:", process.env.TELEGRAM_BOT_TOKEN);
+console.log("WEBSITE_URL:", process.env.WEBSITE_URL);
+console.log("WEBSITE_NAME:", process.env.WEBSITE_NAME);
+
 require('dotenv').config(); // Load environment variables from .env
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
