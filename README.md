@@ -1,71 +1,57 @@
 # AdLinkFly Telegram Bot
-## DEMO: https://t.me/snipnbot
-### This bot integrates AdLinkFly with Telegram to enable users to easily shorten long URLs, track clicks and visits, and monitor their earnings directly from their personal accounts via Telegram. The bot interacts with the AdLinkFly API and provides users with the following features:
 
-# Features:<br></br>
-URL Shortening: Users can send long URLs to the bot, which will return the shortened version generated through the connected AdLinkFly account.
-Click and Visit Tracking: The bot fetches click and visit data from the AdLinkFly API and displays it to users in real time.
-Earnings Overview: Users can view their earnings directly through the bot, which will fetch data from their personal AdLinkFly account.
-How to Use:
-Connect API:
+## Demo Bot: [@snipnbot](https://t.me/snipnbot)
 
-To use the bot, the user needs to connect their AdLinkFly API key.
-This can be done by following the bot's instructions to enter their API key from the AdLinkFly website.
-Send Long URLs:
+This Telegram bot integrates **AdLinkFly** with Telegram to allow users to shorten long URLs, track clicks and visits, and monitor their earnings directly from their personal accounts via Telegram. The bot interacts with the AdLinkFly API and offers the following features:
 
-# Once connected, users can send long URLs to the bot. The bot will respond with the shortened version.
-Track Stats:
-### The bot fetches visit and click statistics for the shortened URLs.
+---
 
-### **🔽 Download:**
+### **🛠️ Key Features:**
+- **URL Shortening:** Send long URLs to the bot and get a shortened version generated through your connected AdLinkFly account.
+- **Click and Visit Tracking:** Fetch real-time click and visit data from the AdLinkFly API and display it in your Telegram chat.
+- **Earnings Overview:** Monitor your earnings directly through the bot by fetching your earnings data from AdLinkFly.
+- **Custom Aliases:** Generate shortened URLs with custom aliases for better branding.
 
-   * You don't need to download anything for most cases (except: you are deploying this in your own custom server directly)
-   * For Custom Server deployment (direct) Download the Latest ZIP from Releases Section
+---
 
-# Telegram Bot Token
+### **🔧 How to Use:**
+
+1. **Connect API:**
+   - To use the bot, you need to connect your **AdLinkFly API key**.
+   - The bot will guide you to enter your API key from your AdLinkFly account.
+
+2. **Send Long URLs:**
+   - After connecting your API, just send long URLs to the bot, and it will provide a shortened version.
+
+3. **Track Stats:**
+   - The bot will fetch click and visit statistics for your shortened URLs in real time.
+
+---
+
+### **🔑 Required Environment Variables:**
+
+To deploy and run the bot, you'll need to set the following environment variables:
+
+```env
+# Telegram Bot Token (Get from BotFather on Telegram)
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token-here
 
-# Site's API URL for shortening
+# AdLinkFly API URL for shortening
 SITE_API_URL=https://yoursite.com/api
 
-# Demo API URL for users who haven't provided their token
+# Demo API URL for users who haven't provided their API key
 DEMO_API_URL=https://your-demo-api-url.com/shorten
 
-# Site details
+# Site details (Customize these for your site)
 SITE_URL=https://yoursite.com
 SITE_NAME=YourSiteNameHere
 SUPPORT_CHANNEL_LINK=https://t.me/your-support-channel
 
-# Database credentials
+# Database credentials (For storing user tokens and stats)
 DATABASE_HOST=your-database-host
 DATABASE_USERNAME=your-database-username
 DATABASE_PASSWORD=your-database-password
 DATABASE_NAME=your-database-name
 
-# Welcome message
+# Welcome message to display on /start command
 WELCOME_MESSAGE=Welcome to ${SITE_NAME} Shortener Bot! Use /api to add your API token and start shortening links.
-
-
-     ### **🏷️ Features:**
-
-* Easy to Integrate and Customiseable (All-in-One Config File!)
-* Auto URL Detection and Shortening (No extra commands needed! Just send the link to shorten...It's too easy..!!)
-* Supports Link Shortening with Custom Alias
-* Auto userinput Link Validation with Error Messages.
-* Available Telegram Commands:
-  * **/start** - Shows a custom welcome message when user starts the first conversation with the bot
-  * **/api** - Send /api YOUR_API_KEY to set the api and be able to shorten links and get paid.
-    
-### **🛠️ Contributing**
-  * Want to be the part of this project? Feel free to contribute.., visit briceka.com and click the donate button and send some bucks or coins.!!
-
-Do the changes, Send a Pull Request with proper Description (NOTE: Pull Requests Without Proper Description will be Rejected)
-
-### **📝 License & Usage**
-
-Adlinkfly Telegram Bot is an Open Sourced Project Licensed under GPL-3.0 Anyone can View, Modify or Use (Personal and Commercial) it's Sources without any extra permissions. If you want to Distribute it's Sources then please consider giving it an attribution of this repo.
-NOTE: This Script is Not Officially developed, supported or affiliated by MightyScripts. This is just a hobby project of mine!
-
-***
-
-**An Open Sourced Project** - Developed with &hearts; by **KARIUKI** Sponsored by Briceka Enterprise.
