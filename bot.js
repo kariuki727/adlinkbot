@@ -49,17 +49,18 @@ app.post('/webhook', express.json(), (req, res) => {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
+
   const welcomeMessage = `Howdy🤝, ${username}!🌟\n\n`
-    + 'I\'m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n'
-    + 'Just send me the link you want to shorten, type or paste the URL directly, and I\'ll take care of the rest.😜\n\n'
-    + 'Let\'s get started! 💸👇\n\n'
-    + 'How To Use Me 👇👇 \n\n'
-    + '✅1. Go To ${process.env.WEBSITE_NAME} & Complete Your Registration.\n\n'
-    + '✅2. Then Copy Your API Key Only. \n\n'
-    + '✅3. Then add your API to this bot using command /api \n\n' 
-    + 'Example: /api 7d035d0a298dae4987b94d63294f564c26accf66\n\n'
-    + '⚠️ After setting up the api, send any link in the format https:// or http:// and let me do the shortening for you.\n\n'
-    + '👀 *Not ready to register yet? Try the demo or click the help button for a detailed guide!*';
+    + `I\'m here to help you shorten your links🔗 and start earning up to $20 for every 1,000 clicks.🫰💰\n\n`
+    + `Just send me the link you want to shorten, type or paste the URL directly, and I\'ll take care of the rest.😜\n\n`
+    + `Let\'s get started! 💸👇\n\n`
+    + `How To Use Me 👇👇 \n\n`
+    + `✅1. Go To ${process.env.WEBSITE_NAME} & Complete Your Registration.\n\n`
+    + `✅2. Then Copy Your API Key Only. \n\n`
+    + `✅3. Then add your API to this bot using command /api \n\n` 
+    + `Example: /api 7d035d0a298dae4987b94d63294f564c26accf66\n\n`
+    + `⚠️ After setting up the api, send any link in the format https:// or http:// and let me do the shortening for you.\n\n`
+    + `👀 *Not ready to register yet? Try the demo or click the help button for a detailed guide!*`;
 
   const options = {
     reply_markup: {
@@ -77,6 +78,8 @@ bot.onText(/\/start/, (msg) => {
 // /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
+  
+  // Dynamic website name and URL in the Help message
   const helpMessage = `📚 *${process.env.WEBSITE_NAME} Bot Help & FAQ* 🤖
 
 Here's how you can get started and start earning:
