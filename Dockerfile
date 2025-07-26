@@ -1,4 +1,4 @@
-# Use Python 3.10.6 slim-bullseye as base image (newer Debian version)
+# Use Python 3.10.6 slim-bullseye as base image
 FROM python:3.10.6-slim-bullseye
 
 # Install required system packages and clean up apt cache to reduce image size
@@ -9,14 +9,15 @@ RUN apt-get update && \
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the application files (including start.sh) into the container
+# Copy the entire project into the /app directory in the container
 COPY . .
 
-# Make sure the start.sh script is executable
-RUN chmod +x /start.sh
+# Verify that start.sh is copied correctly and make it executable
+RUN ls -l /app/start.sh  # This is just to debug, you can remove after confirming
+RUN chmod +x /app/start.sh  # Ensure start.sh is executable
 
 # Install Python dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the command to run the start.sh script
-CMD ["/bin/bash", "/start.sh"]
+CMD ["/bin/bash", "/app/start.sh"]
