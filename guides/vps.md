@@ -5,7 +5,7 @@
 Clone the project
 
 ```bash
-  git clone https://github.com/kevinnadar22/URL-Shortener-V2
+  git clone https://github.com/kariuki727/adlinkbot
 ```
 
 Go to the project directory
