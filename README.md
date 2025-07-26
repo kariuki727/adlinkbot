@@ -1,11 +1,25 @@
-# URL Shortener Bot V2
+# AdLinkFly Telegram Bot
+
+## Demo Bot: [@snipnbot](https://t.me/snipnbot)
+
+This Telegram bot integrates **AdLinkFly** with Telegram to allow users to shorten long URLs, track clicks and visits, and monitor their earnings directly from their personal accounts via Telegram. The bot interacts with the AdLinkFly API and offers the following features:
+
+---
+
+### **🛠️ Key Features:**
+- **URL Shortening:** Send long URLs to the bot and get a shortened version generated through your connected AdLinkFly account.
+- **Click and Visit Tracking:** Fetch real-time click and visit data from the AdLinkFly API and display it in your Telegram chat.
+- **Earnings Overview:** Monitor your earnings directly through the bot by fetching your earnings data from AdLinkFly.
+- **Custom Aliases:** Generate shortened URLs with custom aliases for better branding.
+
+---
 
 <p align="center">
 
-![Fork](https://img.shields.io/github/forks/kevinnadar22/URL-Shortener-V2?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/kevinnadar22/URL-Shortener-V2?color=%23&style=for-the-badge)
-![License](https://img.shields.io/github/license/kevinnadar22/URL-Shortener-V2?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/kevinnadar22/URL-Shortener-V2?style=for-the-badge)
+![Fork](https://img.shields.io/github/forks/kariuki727/adlinkbot?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/kariuki727/adlinkbot?color=%23&style=for-the-badge)
+![License](https://img.shields.io/github/license/kariuki727/adlinkbot?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/kariuki727/adlinkbot?style=for-the-badge)
 
 </p>
 
@@ -14,7 +28,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/kevinnadar22/URL-Shortener-V2">
+  <a href="https://github.com/kariuki727/adlinkbot">
     <img src="https://i.ibb.co/1mwchh9/Screenshot-2022-07-08-at-11-06-34-AM.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -26,11 +40,11 @@
     ·
     <a href="https://www.telegram.dog/ask_admin001">Report Bug</a>
     ·
-    <a href="https://github.com/kevinnadar22/URL-Shortener-V2#features">Features</a>
+    <a href="https://github.com/kariuki727/adlinkbot#features">Features</a>
     ·
-    <a href="https://github.com/kevinnadar22/URL-Shortener-V2#deploy">Deploy</a>
+    <a href="https://github.com/kariuki727/adlinkbot#deploy">Deploy</a>
     ·
-    <a href="https://github.com/kevinnadar22/URL-Shortener-V2#required-variables">Variables</a>
+    <a href="https://github.com/kariuki727/adlinkbot#required-variables">Variables</a>
   </p>
 </div>
 
@@ -75,7 +89,7 @@
 
 - -> Add me to your channel as admin with full previlages to convert channel's post
 
-> For more information about usages, see the [documentation](https://github.com/kevinnadar22/URL-Shortener-V2/wiki/Usage)
+> For more information about usages, see the [documentation](https://github.com/kariuki727/adlinkbot/wiki/Usage)
 
 ## Commands
 
@@ -133,7 +147,7 @@ info - get user info
 
 ### Optional Variables
 
-> For more information about optional variables see the [wiki documentation](https://github.com/kevinnadar22/URL-Shortener-V2/wiki/About#optional-variables)
+> For more information about optional variables see the [wiki documentation](https://github.com/kariuki727/adlinkbot/wiki/About#optional-variables)
 
 ## Deploy
 
@@ -142,7 +156,7 @@ You can deploy this bot anywhere.
 |                                                        | Name                 | Deploy                                                                                                                                                                                                                             |
 | ------------------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ![Replit](assets/img/replit.jpg)                       | Replit (Recommended) | [See Guide](/guides/replit.md)                                                                                                                                                                                                     |
-| [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kevinnadar22/URL-Shortener-V2)                                                                                      |
+| [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kariuki727/adlinkbot)                                                                                      |
 | ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kevinnadar22/url-shortener-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
 | ![VPS](assets/img/vps.png)                             | VPS                  | [See Guide](/guides/vps.md)                                                                                                                                                                                                        |
 
@@ -167,4 +181,6 @@ Selling The Codes To Other People For Money Is _Strictly Prohibited_.
 
 ## Credits
 
-- [Thanks To Me](https://github.com/Kevinnadar22)
+### **Developed with ❤️ by [KARIUKI](https://github.com/kariuki727)**
+**Sponsored by [Briceka Enterprise](https://bricekainc.github.io/)**
+
