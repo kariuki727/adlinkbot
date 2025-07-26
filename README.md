@@ -74,19 +74,6 @@ unban - to unban users
 info - get user info
 ```
 
-## About
-
-### Features
-
-- [x] Shortener
-- [x] Api support
-- [x] Channels Support
-- [x] Batch Support
-- [x] Multiple Methods Available
-- [x] Bypass Shortener Links
-- [x] [Hyperlink Support](https://example.com/)
-- [x] [Request Features](https://support.briceka.com/)
-
 ### Required Variables
 
 | Variable Name              | Value                                                                                                                                                          |
@@ -99,30 +86,13 @@ info - get user info
 | `DATABASE_URL` (required)  | [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). |
 | `DATABASE_NAME` (required) | Name of the database in [mongoDB](https://www.mongodb.com).   |
 
-### Optional Variables
-
-> For more information about optional variables see the [wiki documentation](https://github.com/kariuki727/adlinkbot/wiki/About#optional-variables)
-
-
-
-## Tech Stack
-
-**Language:** [Python](https://www.python.org/) 3.10.2
-
-**Library:** [Pyrogram](https://github.com/pyrogram/pyrogram) 2.0.30
-
 ## Support
 
 Contact Our [DEV](https://support.briceka.com/) For Support/Assistance
 
 Report Bugs, Give Feature Requests There..  
-Do Fork And Star The Repository If You Liked It.
+Fork And Star The Repository If You Liked It.
 
-## Disclaimer
-
-[![GNU Affero General Public License v3.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)  
-Licensed under [GNU AGPL v3.0.](LICENSE)
-Selling The Codes To Other People For Money Is _Strictly Prohibited_.
 
 ## Credits
 
