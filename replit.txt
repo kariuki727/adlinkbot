@@ -1,0 +1,5 @@
+
+
+language = "python3"
+run = "python -m main"
+
