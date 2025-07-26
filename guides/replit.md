@@ -1,12 +1,3 @@
-# [Workflow with Replit and Github](https://app.tango.us/app/workflow/ef1fe747-d009-42ba-95e4-0f9b192301d6?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links)
-
-
-__Author:__ Kevin
-
-__Source:__ [Tango](https://app.tango.us/app/workflow/ef1fe747-d009-42ba-95e4-0f9b192301d6?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links)
-
-***
-
 ### Create a [Replit.com](https://replit.com) account to continue with the tutorial
 
 ### 1. [Go to Create a new Repl - Replit](https://replit.com/github/kariuki727/adlinkbot)
