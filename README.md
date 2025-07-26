@@ -23,63 +23,19 @@ This Telegram bot integrates **AdLinkFly** with Telegram to allow users to short
 
 </p>
 
----
+## Deploy
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/kariuki727/adlinkbot">
-    <img src="https://i.ibb.co/1mwchh9/Screenshot-2022-07-08-at-11-06-34-AM.png" alt="Logo" width="20" height="20">
-  </a>
+You can deploy this bot anywhere.
 
-  <h3 align="center">AdLinkFly Telegram Bot</h3>
+|                                                        | Name                 | Deploy                                                                                                                                                                                                                             |
+| ------------------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ![Replit](assets/img/replit.jpg)                       | Replit (Recommended) | [See Guide](/guides/replit.md)                                                                                                                                                                                                     |
+| [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kariuki727/adlinkbot)                                                                                      |
+| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kariuki727/adlinkbot-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
+| ![VPS](assets/img/vps.png)                             | VPS                  | [See Guide](/guides/vps.md)                                                                                                                                                                                                        |
 
-  <p align="center">
-    Shorten Links & Earn Highest CPM Online Instantly
-    <br />
-    ·
-    <a href="https://support.briceka.com/">Report Bug</a>
-    ·
-    <a href="https://github.com/kariuki727/adlinkbot#features">Features</a>
-    ·
-    <a href="https://github.com/kariuki727/adlinkbot#deploy">Deploy</a>
-    ·
-    <a href="https://github.com/kariuki727/adlinkbot#required-variables">Variables</a>
   </p>
 </div>
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#description">Description</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#commands">Commands</a></li>
-    <li>
-        <a href="#about">About</a>
-        <ul>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#required-variables">Required Variables</a></li>
-        <li><a href="#optional-variables">Optional Variables</a></li>
-      </ul>
-      </li>
-    <li><a href="#deploy">Deploy</a></li>
-    <li><a href="#tech-stack">Tech Stack</a></li>
-    <li><a href="#support">Support</a></li>
-    <li><a href="#disclaimer">Disclaimer</a></li>
-    <li><a href="#credits">Credits</a></li>
-  </ol>
-</details>
-
----
-
-## Description
-
-> **Now this bot can be used by users also. Only admin has access to channel support. Bot Owner API will be used in channel post converting. You can restrict users from using this bot by setting env `IS_PRIVATE` to True**
-
-**This Is Just An Simple Advance Shortener and Converter Bot Completely Rewritten Version Of [URL Shortener](https://github.com/t2links/URL-Shortener-bot)**
-
-**Just Send Any Link To Short. It Will Short Link or Save it to your MDisk Account**
 
 ## Usage
 
@@ -89,8 +45,6 @@ This Telegram bot integrates **AdLinkFly** with Telegram to allow users to short
 
 - -> Add me to your channel as admin with full previlages to convert channel's post
 
-> For more information about usages, see the [documentation](https://github.com/kariuki727/adlinkbot/wiki/Usage)
-
 ## Commands
 
 ```
@@ -99,7 +53,7 @@ help - help Command
 about - about Command
 method - to set your preferred method
 shortener_api - set shortener api
-mdisk_api - set mdisk api
+snipn_api - set shortener api
 header - set header
 footer - set footer
 username - set username to replace others
@@ -125,7 +79,7 @@ info - get user info
 ### Features
 
 - [x] Shortener
-- [x] Adlinkfly
+- [x] Api support
 - [x] Channels Support
 - [x] Batch Support
 - [x] Multiple Methods Available
@@ -149,16 +103,7 @@ info - get user info
 
 > For more information about optional variables see the [wiki documentation](https://github.com/kariuki727/adlinkbot/wiki/About#optional-variables)
 
-## Deploy
 
-You can deploy this bot anywhere.
-
-|                                                        | Name                 | Deploy                                                                                                                                                                                                                             |
-| ------------------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![Replit](assets/img/replit.jpg)                       | Replit (Recommended) | [See Guide](/guides/replit.md)                                                                                                                                                                                                     |
-| [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kariuki727/adlinkbot)                                                                                      |
-| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kariuki727/adlinkbot-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
-| ![VPS](assets/img/vps.png)                             | VPS                  | [See Guide](/guides/vps.md)                                                                                                                                                                                                        |
 
 ## Tech Stack
 
