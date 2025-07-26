@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 import PyBypass as bypasser
 from aiohttp import web
-from mdisky import Mdisk
+from snipny import Snipn
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.errors import FloodWait, MessageNotModified, PeerIdInvalid
@@ -73,9 +73,9 @@ async def main_convertor_handler(
 
     # A dictionary which contains the methods to be called.
     METHODS = {
-        "mdisk": mdisk_api_handler,
+        "snipn": snipn_api_handler,
         "shortener": replace_link,
-        "mdlink": mdisk_droplink_convertor,
+        "mdlink": snipn_droplink_convertor,
     }
 
     # Replacing the username with your username.
@@ -179,10 +179,10 @@ async def create_inline_keyboard_markup(message: Message, method_func, user):
         return InlineKeyboardMarkup(buttons)
 
 
-async def mdisk_api_handler(user, text, alias=""):
-    api_key = user["mdisk_api"]
-    mdisk = Mdisk(api_key)
-    return await mdisk.convert_from_text(text)
+async def snipn_api_handler(user, text, alias=""):
+    api_key = user["snipn_api"]
+    snipn = Snipn(api_key)
+    return await snipn.convert_from_text(text)
 
 
 async def replace_link(user, text, alias=""):
@@ -217,8 +217,8 @@ async def replace_link(user, text, alias=""):
     return text
 
 
-async def mdisk_droplink_convertor(user, text, alias=""):
-    links = await mdisk_api_handler(user, text)
+async def snipn_droplink_convertor(user, text, alias=""):
+    links = await snipn_api_handler(user, text)
     links = await replace_link(user, links, alias=alias)
     return links
 
@@ -295,17 +295,17 @@ async def update_stats(m: Message, method):
     else:
         message = m.text.html
 
-    mdisk_links = re.findall(
-        r'https?://mdisk.me[^\s`!()\[\]{};:".,<>?«»“”‘’]+', message
+    snipn_links = re.findall(
+        r'https?://snipn.me[^\s`!()\[\]{};:".,<>?«»“”‘’]+', message
     )
     droplink_links = await extract_link(message)
     total_links = len(droplink_links)
     await db.update_posts(1)
-    if method == "mdisk":
+    if method == "snipn":
         droplink_links = []
     if method == "shortener":
-        mdisk_links = []
-    await db.update_links(total_links, len(droplink_links), len(mdisk_links))
+        snipn_links = []
+    await db.update_links(total_links, len(droplink_links), len(snipn_links))
 
 
 async def get_me_button(user):
@@ -349,15 +349,15 @@ async def get_me_button(user):
 
 async def user_api_check(user):
     user_method = user["method"]
-    if user_method == "mdisk":
-        if not user["mdisk_api"]:
-            return "\n\nSet your /mdisk_api to continue..."
+    if user_method == "snipn":
+        if not user["snipn_api"]:
+            return "\n\nSet your /snipn_api to continue..."
     elif user_method == "shortener":
         if not user["shortener_api"]:
             return f"\n\nSet your /shortener_api to continue...\nCurrent Website {user['base_site']}"
     elif user_method == "mdlink":
-        if not user["mdisk_api"]:
-            return "\n\nSet your /mdisk_api to continue..."
+        if not user["snipn_api"]:
+            return "\n\nSet your /snipn_api to continue..."
         if not user["shortener_api"]:
             return f"\n\nSet your /shortener_api to continue...\nCurrent Website {user['base_site']}"
     else:
@@ -384,7 +384,7 @@ async def set_commands(app):
         BotCommand("about", "Displays information about the bot."),
         BotCommand("method", "Sets your preferred method."),
         BotCommand("shortener_api", "Sets the shortener API."),
-        BotCommand("mdisk_api", "Sets the mDisk API."),
+        BotCommand("snipn_api", "Sets the sNipn API."),
         BotCommand("header", "Sets the header."),
         BotCommand("footer", "Sets the footer."),
         BotCommand("username", "Sets the username to replace others."),
