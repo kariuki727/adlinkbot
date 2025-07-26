@@ -21,7 +21,7 @@ from utils import extract_link, get_me_button, get_size
 logger = logging.getLogger(__name__)
 
 user_commands = [
-    "mdisk_api",
+    "snipn_api",
     "shortener_api",
     "header",
     "footer",
@@ -125,7 +125,7 @@ async def method_handler(c: Client, m: Message):
         return await m.reply(s, reply_markup=METHOD_REPLY_MARKUP)
     elif len(cmd) == 2:
         method = cmd[1]
-        if method not in ["mdisk", "mdlink", "shortener"]:
+        if method not in ["snipn", "mdlink", "shortener"]:
             return await m.reply(METHOD_MESSAGE.format(method=user["method"]))
         await update_user_info(user_id, {"method": method})
         await m.reply(f"Method updated successfully to {method}")
@@ -168,7 +168,7 @@ async def stats_handler(c: Client, m: Message):
 **- Total Users:** `{total_users}`
 **- Total Posts Sent:** `{link_stats['posts']}`
 **- Total Links Shortened:** `{link_stats['links']}`
-**- Total Mdisk Links Shortened:** `{link_stats['mdisk_links']}`
+**- Total Snipn Links Shortened:** `{link_stats['snipn_links']}`
 **- Total Shortener Links Shortened:** `{link_stats['shortener_links']}`
 **- Used Storage:** `{size}`
 **- Total Free Storage:** `{free}`
@@ -192,18 +192,18 @@ async def log_file(bot, message):
         await message.reply(str(e))
 
 
-@Client.on_message(filters.command("mdisk_api") & filters.private)
+@Client.on_message(filters.command("snipn_api") & filters.private)
 @private_use
-async def mdisk_api_handler(bot, message: Message):
+async def snipn_api_handler(bot, message: Message):
     user_id = message.from_user.id
     user = await get_user(user_id)
     cmd = message.command
     if len(cmd) == 1:
-        return await message.reply(MDISK_API_MESSAGE.format(user["mdisk_api"]))
+        return await message.reply(SNIPN_API_MESSAGE.format(user["snipn_api"]))
     elif len(cmd) == 2:
         api = cmd[1].strip()
-        await update_user_info(user_id, {"mdisk_api": api})
-        await message.reply(f"Mdisk API updated successfully to {api}")
+        await update_user_info(user_id, {"snipn_api": api})
+        await message.reply(f"Snipn API updated successfully to {api}")
 
 
 @Client.on_message(filters.command("shortener_api") & filters.private)
@@ -350,7 +350,7 @@ async def me_handler(bot, m: Message):
         base_site=user["base_site"],
         method=user["method"],
         shortener_api=user["shortener_api"],
-        mdisk_api=user["mdisk_api"],
+        snipn_api=user["snipn_api"],
         username=user["username"],
         header_text=user["header_text"].replace(r"\n", "\n")
         if user["header_text"]
@@ -516,7 +516,7 @@ async def get_user_info_handler(c: Client, m: Message):
             base_site=user["base_site"],
             method=user["method"],
             shortener_api="This is something secret",
-            mdisk_api="This is something secret",
+            snipn_api="This is something secret",
             username=user["username"],
             header_text=user["header_text"].replace("\n", "\n")
             if user["header_text"]
