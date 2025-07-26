@@ -29,16 +29,16 @@ This Telegram bot integrates **AdLinkFly** with Telegram to allow users to short
 <br />
 <div align="center">
   <a href="https://github.com/kariuki727/adlinkbot">
-    <img src="https://i.ibb.co/1mwchh9/Screenshot-2022-07-08-at-11-06-34-AM.png" alt="Logo" width="80" height="80">
+    <img src="https://i.ibb.co/1mwchh9/Screenshot-2022-07-08-at-11-06-34-AM.png" alt="Logo" width="20" height="20">
   </a>
 
-  <h3 align="center">URL Shortener Bot V2</h3>
+  <h3 align="center">AdLinkFly Telegram Bot</h3>
 
   <p align="center">
-    A Shortener and Convertor Bot
+    Shorten Links & Earn Highest CPM Online Instantly
     <br />
     ·
-    <a href="https://www.telegram.dog/ask_admin001">Report Bug</a>
+    <a href="https://support.briceka.com/">Report Bug</a>
     ·
     <a href="https://github.com/kariuki727/adlinkbot#features">Features</a>
     ·
@@ -125,13 +125,13 @@ info - get user info
 ### Features
 
 - [x] Shortener
-- [x] Mdisk Convertor
+- [x] Adlinkfly
 - [x] Channels Support
 - [x] Batch Support
 - [x] Multiple Methods Available
 - [x] Bypass Shortener Links
 - [x] [Hyperlink Support](https://example.com/)
-- [x] [Request Features](https://t.me/ask_admin001)
+- [x] [Request Features](https://support.briceka.com/)
 
 ### Required Variables
 
@@ -142,8 +142,8 @@ info - get user info
 | `BOT_TOKEN` (required)     | Create a bot using @BotFather, and get the Telegram API token.                                                                                                 |
 | `ADMINS`                   | ID of Admins. Separate multiple Admins by comma                                                                                                                |
 | `OWNER_ID` (required)      | ID of Owner.                                                                                                                                                   |
-| `DATABASE_URL` (required)  | [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo) |
-| `DATABASE_NAME` (required) | Name of the database in [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)                                     |
+| `DATABASE_URL` (required)  | [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). |
+| `DATABASE_NAME` (required) | Name of the database in [mongoDB](https://www.mongodb.com).   |
 
 ### Optional Variables
 
@@ -157,7 +157,7 @@ You can deploy this bot anywhere.
 | ------------------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ![Replit](assets/img/replit.jpg)                       | Replit (Recommended) | [See Guide](/guides/replit.md)                                                                                                                                                                                                     |
 | [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kariuki727/adlinkbot)                                                                                      |
-| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kevinnadar22/url-shortener-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
+| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kariuki727/adlinkbot-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
 | ![VPS](assets/img/vps.png)                             | VPS                  | [See Guide](/guides/vps.md)                                                                                                                                                                                                        |
 
 ## Tech Stack
@@ -168,7 +168,7 @@ You can deploy this bot anywhere.
 
 ## Support
 
-Contact Our [DEV](https://www.telegram.dog/ask_admin001) For Support/Assistance
+Contact Our [DEV](https://support.briceka.com/) For Support/Assistance
 
 Report Bugs, Give Feature Requests There..  
 Do Fork And Star The Repository If You Liked It.
