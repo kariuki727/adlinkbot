@@ -4,7 +4,7 @@ from config import DATABASE_URL, DATABASE_NAME
 client = AsyncIOMotorClient(DATABASE_URL)
 db = client[DATABASE_NAME]
 col = db["users"]
-
++
 
 async def get_user(user_id):
     user_id = int(user_id)
@@ -14,7 +14,7 @@ async def get_user(user_id):
             "user_id": user_id,
             "method": "shortener",
             "shortener_api": None,
-            "mdisk_api": None,
+            "snipn_api": None,
             "header_text": "",
             "footer_text": "",
             "username": None,
