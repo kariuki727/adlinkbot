@@ -26,7 +26,7 @@ ADMINS = (
     else []
 )
 
-DATABASE_NAME = os.environ.get("DATABASE_NAME", "MdiskConvertor")
+DATABASE_NAME = os.environ.get("DATABASE_NAME", "SnipnBot")
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", None
 )  # mongodb uri from https://www.mongodb.com/
@@ -69,7 +69,7 @@ DE_BYPASS = (
     if os.environ.get("DE_BYPASS")
     else []
 )
-DE_BYPASS.append("mdisk.me")
+DE_BYPASS.append("snipn.cc")
 
 FORWARD_MESSAGE = is_enabled(
     (os.environ.get("FORWARD_MESSAGE", "False")), False
