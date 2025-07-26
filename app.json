@@ -44,7 +44,7 @@
     },
     "DATABASE_NAME": {
       "description": "Name of the database",
-      "value": "MdiskConvertor",
+      "value": "SnipnBot",
       "required": false
     },
     "DATABASE_URL":{
