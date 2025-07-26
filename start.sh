@@ -1,7 +1,7 @@
 if [ -z $SOURCE_CODE ]
 then
   echo "Cloning main Repository"
-  git clone https://github.com/kariuki727/adlinkbot.git /URL-Shortener-V2
+  git clone https://github.com/kariuki727/adlinkbot.git /adlinkbot
 else
   echo "Cloning Custom Repo from $SOURCE_CODE "
   git clone $SOURCE_CODE /adlinkbot
