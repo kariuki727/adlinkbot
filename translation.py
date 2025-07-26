@@ -59,11 +59,11 @@ Current Method: {method}
     
 Methods Available:
 
-> `mdlink` - Change all the links of the post to your MDisk account first and then short to {shortener} link.
+> `mdlink` - Change all the links of the post to your SNipn account first and then short to {shortener} link.
 
 > `shortener` - Short all the links of the post to {shortener} link directly.
 
-> `mdisk` - Save all the links of the post to your Mdisk account.
+> `snipn` - Save all the links of the post to your Snipn account.
     
 To change method, choose it from the following options:
 """
@@ -138,7 +138,7 @@ METHOD_REPLY_MARKUP = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 "Shortener", callback_data="change_method#shortener"
             ),
-            InlineKeyboardButton("Mdisk", callback_data="change_method#mdisk"),
+            InlineKeyboardButton("Snipn", callback_data="change_method#snipn"),
         ],
         [
             InlineKeyboardButton("Back", callback_data="help_command"),
@@ -160,7 +160,7 @@ USER_ABOUT_MESSAGE = """
 
 - 🔌 {base_site} API: {shortener_api}
 
-- 💾 Mdisk API: {mdisk_api}
+- 💾 Snipn API: {snipn_api}
 
 - 📎 Username: @{username}
 
@@ -174,15 +174,15 @@ USER_ABOUT_MESSAGE = """
 """
 
 
-MDISK_API_MESSAGE = """To add or update your Mdisk API, \n`/mdisk_api mdisk_api`
+SNIPN_API_MESSAGE = """To add or update your Snipn API, \n`/snipn_api snipn_api`
             
-Ex: `/mdisk_api 6LZq851sXoPHugiKQq`
+Ex: `/snipn_api 6LZq851sXoPHugiKQq`
             
-Others Mdisk Links will be automatically changed to the API of this Mdisk account
+Others Snipn Links will be automatically changed to the API of this Snipn account
 
-Get your Mdisk API from @VideoToolMoneyTreebot
+Get your Snipn API from @VideoToolMoneyTreebot
 
-Current Mdisk API: `{}`"""
+Current Snipn API: `{}`"""
 
 SHORTENER_API_MESSAGE = """To add or update your Shortner Website API, 
 `/shortener_api [api]`
