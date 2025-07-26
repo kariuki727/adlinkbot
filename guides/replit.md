@@ -9,7 +9,7 @@ __Source:__ [Tango](https://app.tango.us/app/workflow/ef1fe747-d009-42ba-95e4-0f
 
 ### Create a [Replit.com](https://replit.com) account to continue with the tutorial
 
-### 1. [Go to Create a new Repl - Replit](https://replit.com/github/kevinnadar22/url-shortener-v2)
+### 1. [Go to Create a new Repl - Replit](https://replit.com/github/kariuki727/adlinkbot)
 
 
 ### 2. Click on Import from GitHub
@@ -25,7 +25,7 @@ After Setting Up, You will get this in your sidebar. Click on done
 
 
 ### 5. Add Environment variables
-Add Environment variables. Refer [https://github.com/kevinnadar22/URL-Shortener-V2/wiki/About](https://github.com/kevinnadar22/URL-Shortener-V2/wiki/About)
+Add Environment variables. Refer [https://github.com/kariuki727/adlinkbot/wiki/About](https://github.com/kariuki727/adlinkbot/wiki/About)
 ![Step 5 screenshot](https://images.tango.us/public/screenshot_d67cd814-721a-4afb-9f74-47972d0c389b.png?crop=focalpoint&fit=crop&fp-x=0.0182&fp-y=0.2463&fp-z=2.9073&w=1200&mark-w=0.2&mark-pad=0&mark64=aHR0cHM6Ly9pbWFnZXMudGFuZ28udXMvc3RhdGljL21hZGUtd2l0aC10YW5nby13YXRlcm1hcmsucG5n&ar=3840%3A2002)
 
 
