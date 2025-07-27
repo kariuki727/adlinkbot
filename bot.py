@@ -7,7 +7,6 @@ import sys
 
 from pyrogram import Client
 
-
 from config import *
 from database import db
 from database.users import filter_users
@@ -48,6 +47,8 @@ class Bot(Client):
         self.username = f"@{me.username}"
         temp.BOT_USERNAME = me.username
         temp.FIRST_NAME = me.first_name
+
+        # Ensuring stats exist in MySQL, calling db's MySQL method
         if not await db.get_bot_stats():
             await db.create_stats()
 
