@@ -54,17 +54,21 @@ bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   
   if (query.data === 'try_demo') {
-    const demoUrl = 'https://example.com'; // Demo URL for shortening
-    const shortenedUrl = await shortenUrl(demoApiToken, demoUrl);
+    const demoMessage = `You are using the *demo version* of Snipn. You can shorten any URL, but please note you will not earn rewards until you set up your own API token! 🚫💰\n\n`
+    + `To start earning, go to [Snipn API page](https://snipn.cc/member/tools/api), copy your API token, and send it using the command: \n\n`
+    + `/api YOUR_API_TOKEN\n\n`
+    + `For example: \n\n`
+    + `/api 7d035d0a298dae4987b94d63294f564c26accf66\n\n`
+    + 'Now, send any URL to shorten it!';
     
-    bot.sendMessage(chatId, `Here's your shortened demo URL: ${shortenedUrl}`);
+    bot.sendMessage(chatId, demoMessage, { parse_mode: 'Markdown' });
   }
 });
 
-// Function to shorten a URL using the API
-async function shortenUrl(apiToken, url) {
+// Function to shorten a URL using the demo API (without requiring API setup)
+async function shortenUrlUsingDemo(url) {
   try {
-    const apiUrl = `https://snipn.cc/api?api=${apiToken}&url=${encodeURIComponent(url)}&format=text`;
+    const apiUrl = `https://snipn.cc/api?api=${demoApiToken}&url=${encodeURIComponent(url)}&format=text`;
     const response = await axios.get(apiUrl);
     return response.data;  // returns the shortened URL
   } catch (error) {
@@ -90,41 +94,64 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
+  // If the message is a forwarded message, check for URLs in the text
+  if (msg.forward_from || msg.forward_from_chat) {
+    extractAndShortenUrls(chatId, messageText);
+  }
+  
   // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
-  if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
-    shortenUrlAndSend(chatId, messageText);
+  else if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
+    shortenUrlAndSend(chatId, messageText, true); // 'true' means demo mode
+  }
+  // Check if there are URLs in the message text and shorten all of them
+  else if (messageText) {
+    extractAndShortenUrls(chatId, messageText);
   }
 });
 
-// Function to shorten the URL and send the result
-async function shortenUrlAndSend(chatId, Url) {
-  // Retrieve the user's Snipn API token from the database
-  const arklinksToken = getUserToken(chatId);
-
-  if (!arklinksToken) {
-    bot.sendMessage(chatId, 'Please provide your Snipn API token first. Use the command: /api YOUR_Snipn_API_TOKEN');
-    return;
-  }
-
-  try {
-    const apiUrl = `https://snipn.cc/api?api=${arklinksToken}&url=${Url}`;
-
-    // Make a request to the Snipn API to shorten the URL
-    const response = await axios.get(apiUrl);
-    const shortUrl = response.data.shortenedUrl;
-
-    const responseMessage = `Shortened URL: ${shortUrl}`;
-    bot.sendMessage(chatId, responseMessage);
-  } catch (error) {
-    console.error('Shorten URL Error:', error);
-    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check your API token and try again.');
+// Function to extract URLs and shorten them
+async function extractAndShortenUrls(chatId, text) {
+  const urls = text.match(/https?:\/\/[^\s]+/g);  // Regular expression to find URLs
+  if (urls) {
+    for (const url of urls) {
+      shortenUrlAndSend(chatId, url, true); // 'true' means demo mode
+    }
   }
 }
 
-// Function to validate the URL format
-function isValidUrl(url) {
-  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
-  return urlPattern.test(url);
+// Function to shorten the URL and send the result
+async function shortenUrlAndSend(chatId, url, isDemo = false) {
+  let shortenedUrl;
+
+  // If in demo mode, shorten the URL using the demo API token
+  if (isDemo) {
+    shortenedUrl = await shortenUrlUsingDemo(url);
+    const responseMessage = `Demo: Here's your shortened URL: ${shortenedUrl}\n\n`
+      + 'Note: You are using the demo version. To start earning, please set up your own API token. See instructions by typing /start.';
+    bot.sendMessage(chatId, responseMessage);
+  } else {
+    // Normal shortening process (with user API token)
+    const arklinksToken = getUserToken(chatId);
+
+    if (!arklinksToken) {
+      bot.sendMessage(chatId, 'Please provide your Snipn API token first. Use the command: /api YOUR_Snipn_API_TOKEN');
+      return;
+    }
+
+    try {
+      const apiUrl = `https://snipn.cc/api?api=${arklinksToken}&url=${url}`;
+
+      // Make a request to the Snipn API to shorten the URL
+      const response = await axios.get(apiUrl);
+      const shortUrl = response.data.shortenedUrl;
+
+      const responseMessage = `Shortened URL: ${shortUrl}`;
+      bot.sendMessage(chatId, responseMessage);
+    } catch (error) {
+      console.error('Shorten URL Error:', error);
+      bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check your API token and try again.');
+    }
+  }
 }
 
 // Function to save user's Snipn API token to the database (Replit JSON database)
