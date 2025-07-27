@@ -75,7 +75,7 @@ async def main_convertor_handler(
     METHODS = {
         "snipn": snipn_api_handler,
         "shortener": replace_link,
-        "mdlink": snipn_droplink_convertor,
+        "snipnlink": snipn_droplink_convertor,
     }
 
     # Replacing the username with your username.
@@ -104,7 +104,7 @@ async def main_convertor_handler(
                 fileid = InputMediaPhoto(banner_image, caption=shortenedText)
 
     if message.text:
-        if user_method in ["shortener", "mdlink"] and "|" in caption:
+        if user_method in ["shortener", "snipnlink"] and "|" in caption:
             regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))\s\|\s([a-zA-Z0-9_]){,30}"
             if custom_alias := re.match(regex, caption):
                 custom_alias = custom_alias[0].split("|")
@@ -355,7 +355,7 @@ async def user_api_check(user):
     elif user_method == "shortener":
         if not user["shortener_api"]:
             return f"\n\nSet your /shortener_api to continue...\nCurrent Website {user['base_site']}"
-    elif user_method == "mdlink":
+    elif user_method == "snipnlink":
         if not user["snipn_api"]:
             return "\n\nSet your /snipn_api to continue..."
         if not user["shortener_api"]:
