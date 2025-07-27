@@ -4,6 +4,7 @@ motor==2.5.1
 Kurigram==2.1.35
 TgCrypto==1.2.3
 PyBypass==2.0.1
+aiomysql
 shortzy
 aiofiles
 validators
