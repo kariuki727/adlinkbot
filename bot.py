@@ -1,12 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
-
 const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.redirect('https://snipn.cc');
 });
 
 const port = 8000;
@@ -14,8 +13,9 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Retrieve the Telegram bot token from the environment variable
+// Retrieve the Telegram bot token and demo API token from the environment variables
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
+const demoApiToken = process.env.DEMO_API_TOKEN;
 
 // Create the Telegram bot instance
 const bot = new TelegramBot(botToken, { polling: true });
@@ -24,16 +24,54 @@ const bot = new TelegramBot(botToken, { polling: true });
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
-  const welcomeMessage = `Hello, ${username}!\n\n`
-    + 'Welcome to the URL Shortener Bot!\n'
-    + 'You can use this bot to shorten URLs.\n\n'
-    + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
-    + 'If you haven\'t set your Snipn API token yet, use the command:\n/api YOUR_API_TOKEN\n\n'
-    + 'Now, go ahead and try it out!';
+  const welcomeMessage = `Hey there, ${username}!\n\n`
+    + '🌟 Welcome to the Snipn URL Shortener Bot! 🌟\n\n'
+    + '✨ Ready to earn rewards while shortening links? You’ve come to the right place! 🚀\n\n'
+    + 'With Snipn, you can shorten any URL and start earning every time someone clicks on it. 🤑💰\n\n'
+    + 'It’s super easy – just drop your link here, and I’ll shorten it for you! You’ll get a fresh short link ready to share. 🔗✨\n\n'
+    + 'Not set up your Snipn API token yet? No worries! Just send the command:\n'
+    + '/api YOUR_API_TOKEN\n\n'
+    + 'Let’s get started and watch those clicks roll in! 🔥👊\n\n'
+    + 'Go ahead and try shortening your first link – the fun begins now! 🎉🎉';
 
-  bot.sendMessage(chatId, welcomeMessage);
+  // Send welcome message with a "Try Demo" button
+  const options = {
+    reply_markup: {
+      inline_keyboard: [
+        [{
+          text: "Try Demo",
+          callback_data: "try_demo"
+        }]
+      ]
+    }
+  };
+  
+  bot.sendMessage(chatId, welcomeMessage, options);
 });
 
+// Handle the "Try Demo" button click
+bot.on('callback_query', async (query) => {
+  const chatId = query.message.chat.id;
+  
+  if (query.data === 'try_demo') {
+    const demoUrl = 'https://example.com'; // Demo URL for shortening
+    const shortenedUrl = await shortenUrl(demoApiToken, demoUrl);
+    
+    bot.sendMessage(chatId, `Here's your shortened demo URL: ${shortenedUrl}`);
+  }
+});
+
+// Function to shorten a URL using the API
+async function shortenUrl(apiToken, url) {
+  try {
+    const apiUrl = `https://snipn.cc/api?api=${apiToken}&url=${encodeURIComponent(url)}&format=text`;
+    const response = await axios.get(apiUrl);
+    return response.data;  // returns the shortened URL
+  } catch (error) {
+    console.error('Error shortening URL:', error);
+    return 'Sorry, there was an error shortening the URL.';
+  }
+}
 
 // Command: /api
 bot.onText(/\/api (.+)/, (msg, match) => {
@@ -74,7 +112,6 @@ async function shortenUrlAndSend(chatId, Url) {
     // Make a request to the Snipn API to shorten the URL
     const response = await axios.get(apiUrl);
     const shortUrl = response.data.shortenedUrl;
-
 
     const responseMessage = `Shortened URL: ${shortUrl}`;
     bot.sendMessage(chatId, responseMessage);
