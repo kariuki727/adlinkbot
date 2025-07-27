@@ -52,12 +52,7 @@ help - help Command
 /api - Send /api YOUR_API_KEY to set the api and be able to shorten links and get paid.
 more to be listed in a few...
 ```
-
-### Required Variables
-
-| Variable Name              | Value                                                                                                                                                          |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |                                                                                           |
-| `BOT_TOKEN` (required)     | Create a bot using @BotFather, and get the Telegram API token.                                             
+                                       
 
 ## Support
 
