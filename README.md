@@ -8,19 +8,10 @@ This Telegram bot integrates **AdLinkFly** with Telegram to allow users to short
 
 ### **🛠️ Key Features:**
 - **URL Shortening:** Send long URLs to the bot and get a shortened version generated through your connected AdLinkFly account.
-- **Click and Visit Tracking:** Fetch real-time click and visit data from the AdLinkFly API and display it in your Telegram chat.
+- **Click and Visit Tracking:** Fetch real-time click and visit data from the AdLinkFly API and display it in your account dashboard.
 - **Earnings Overview:** Monitor your earnings directly through the bot by fetching your earnings data from AdLinkFly.
-- **Custom Aliases:** Generate shortened URLs with custom aliases for better branding.
 
 ---
-
-<p align="center">
-
-![Fork](https://img.shields.io/github/forks/kariuki727/adlinkbot?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/kariuki727/adlinkbot?color=%23&style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/kariuki727/adlinkbot?style=for-the-badge)
-
-</p>
 
 ## Deploy
 
