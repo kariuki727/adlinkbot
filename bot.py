@@ -1,72 +1,114 @@
-import uvloop
-uvloop.install()
-import datetime
-import logging
-import logging.config
-import sys
+const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
+const fs = require('fs');
 
-from pyrogram import Client
+const express = require('express');
+const app = express();
 
-from config import *
-from database import db
-from database.users import filter_users
-from helpers import temp
-from utils import broadcast_admins, create_server, set_commands
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
-# Get logging configurations
-logging.config.fileConfig("logging.conf")
-logging.getLogger().setLevel(logging.INFO)
+const port = 8000;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+// Retrieve the Telegram bot token from the environment variable
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+// Create the Telegram bot instance
+const bot = new TelegramBot(botToken, { polling: true });
+
+// Handle /start command
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const username = msg.from.username;
+  const welcomeMessage = `Hello, ${username}!\n\n`
+    + 'Welcome to the URL Shortener Bot!\n'
+    + 'You can use this bot to shorten URLs using the mybios.eu.org service.\n\n'
+    + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
+    + 'If you haven\'t set your MyBios API token yet, use the command:\n/api YOUR_MYBIOS_API_TOKEN\n\n'
+    + 'Now, go ahead and try it out!';
+
+  bot.sendMessage(chatId, welcomeMessage);
+});
 
 
-class Bot(Client):
-    def __init__(self):
-        super().__init__(
-            "shortener",
-            api_id=API_ID,
-            api_hash=API_HASH,
-            bot_token=BOT_TOKEN,
-            plugins=dict(root="plugins"),
-        )
+// Command: /api
+bot.onText(/\/api (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  const userToken = match[1].trim(); // Get the API token provided by the user
 
-    async def start(self, *args, **kwargs):
+  // Save the user's MyBios API token to the database
+  saveUserToken(chatId, userToken);
 
-        temp.START_TIME = datetime.datetime.now()
-        await super().start(*args, **kwargs)
+  const response = `MyBios API token set successfully. Your token: ${userToken}`;
+  bot.sendMessage(chatId, response);
+});
 
-        if UPDATE_CHANNEL:
-            try:
-                self.invite_link = await self.create_chat_invite_link(UPDATE_CHANNEL)
-            except Exception:
-                logging.error(
-                    f"Make sure to make the bot in your update channel - {UPDATE_CHANNEL}"
-                )
-                sys.exit(1)
+// Listen for any message (not just commands)
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const messageText = msg.text;
 
-        me = await self.get_me()
-        self.owner = await self.get_users(int(OWNER_ID))
-        self.username = f"@{me.username}"
-        temp.BOT_USERNAME = me.username
-        temp.FIRST_NAME = me.first_name
+  // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
+  if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
+    shortenUrlAndSend(chatId, messageText);
+  }
+});
 
-        # Ensuring stats exist in MySQL, calling db's MySQL method
-        if not await db.get_bot_stats():
-            await db.create_stats()
+// Function to shorten the URL and send the result
+async function shortenUrlAndSend(chatId, Url) {
+  // Retrieve the user's MyBios API token from the database
+  const arklinksToken = getUserToken(chatId);
 
-        banned_users = await filter_users({"banned": True})
-        async for user in banned_users:
-            temp.BANNED_USERS.append(user["user_id"])
+  if (!arklinksToken) {
+    bot.sendMessage(chatId, 'Please provide your MyBios API token first. Use the command: /api YOUR_MYBIOS_API_TOKEN');
+    return;
+  }
 
-        await set_commands(self)
+  try {
+    const apiUrl = `https://mybios.eu.org/api?api=${arklinksToken}&url=${Url}`;
 
-        await broadcast_admins(self, "** Bot started successfully **")
-        logging.info("Bot started")
+    // Make a request to the MyBios API to shorten the URL
+    const response = await axios.get(apiUrl);
+    const shortUrl = response.data.shortenedUrl;
 
-        if WEB_SERVER:
-            await create_server()
-            logging.info("Web server started")
-            logging.info("Pinging server")
 
-    async def stop(self, *args, **kwargs):
-        await broadcast_admins(self, "** Bot Stopped Bye **")
-        await super().stop(*args, **kwargs)
-        logging.info("Bot Stopped Bye")
+    const responseMessage = `Shortened URL: ${shortUrl}`;
+    bot.sendMessage(chatId, responseMessage);
+  } catch (error) {
+    console.error('Shorten URL Error:', error);
+    bot.sendMessage(chatId, 'An error occurred while shortening the URL. Please check your API token and try again.');
+  }
+}
+
+// Function to validate the URL format
+function isValidUrl(url) {
+  const urlPattern = /^(|ftp|http|https):\/\/[^ "]+$/;
+  return urlPattern.test(url);
+}
+
+// Function to save user's MyBios API token to the database (Replit JSON database)
+function saveUserToken(chatId, token) {
+  const dbData = getDatabaseData();
+  dbData[chatId] = token;
+  fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
+}
+
+// Function to retrieve user's MyBios API token from the database
+function getUserToken(chatId) {
+  const dbData = getDatabaseData();
+  return dbData[chatId];
+}
+
+// Function to read the database file and parse the JSON data
+function getDatabaseData() {
+  try {
+    return JSON.parse(fs.readFileSync('database.json', 'utf8'));
+  } catch (error) {
+    // Return an empty object if the file doesn't exist or couldn't be parsed
+    return {};
+  }
+}
