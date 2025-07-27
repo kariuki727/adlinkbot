@@ -18,7 +18,6 @@ This Telegram bot integrates **AdLinkFly** with Telegram to allow users to short
 
 ![Fork](https://img.shields.io/github/forks/kariuki727/adlinkbot?style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/kariuki727/adlinkbot?color=%23&style=for-the-badge)
-![License](https://img.shields.io/github/license/kariuki727/adlinkbot?style=for-the-badge)
 ![Issues](https://img.shields.io/github/issues/kariuki727/adlinkbot?style=for-the-badge)
 
 </p>
@@ -31,7 +30,7 @@ You can deploy this bot anywhere.
 | ------------------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ![Replit](assets/img/replit.jpg)                       | Replit (Recommended) | [See Guide](/guides/replit.md)                                                                                                                                                                                                     |
 | [![Heroku](assets/img/heroku.png)](https://heroku.com) | Heroku               | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/kariuki727/adlinkbot)                                                                                      |
-| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kariuki727/adlinkbot-v2&name=url-shortener-v2&run_command=python3%20-m%20main&branch=main) |
+| ![Koyeb](assets/img/koyeb.png)                         | Koyeb                | [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=kariuki727/adlinkbot&name=adlinkbot&run_command=python3%20-m%20main&branch=main) |
 | ![VPS](assets/img/vps.png)                             | VPS                  | [See Guide](/guides/vps.md)                                                                                                                                                                                                        |
 
   </p>
@@ -50,41 +49,15 @@ You can deploy this bot anywhere.
 ```
 start - start it
 help - help Command
-about - about Command
-method - to set your preferred method
-shortener_api - set shortener api
-snipn_api - set shortener api
-header - set header
-footer - set footer
-username - set username to replace others
-banner_image - set banner image
-me - know about you
-base_site - change base site
-include_domain - set include domain
-exclude_domain - set exclude domain
-stats - Stats of the server and bot
-
-Admin only use commands
-
-batch -100XX - to convert link for multiple posts
-logs - Send the log messages
-restart - restart / re-deploy the server
-ban - to ban users
-unban - to unban users
-info - get user info
+/api - Send /api YOUR_API_KEY to set the api and be able to shorten links and get paid.
+more to be listed in a few...
 ```
 
 ### Required Variables
 
 | Variable Name              | Value                                                                                                                                                          |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `API_ID` (required)        | Telegram api_id obtained from <https://my.telegram.org/apps>.                                                                                                  |
-| `API_HASH` (required)      | Telegram api_hash obtained from <https://my.telegram.org/apps>.                                                                                                |
-| `BOT_TOKEN` (required)     | Create a bot using @BotFather, and get the Telegram API token.                                                                                                 |
-| `ADMINS`                   | ID of Admins. Separate multiple Admins by comma                                                                                                                |
-| `OWNER_ID` (required)      | ID of Owner.                                                                                                                                                   |
-| `DATABASE_URL` (required)  | [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). |
-| `DATABASE_NAME` (required) | Name of the database in [mongoDB](https://www.mongodb.com).   |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |                                                                                           |
+| `BOT_TOKEN` (required)     | Create a bot using @BotFather, and get the Telegram API token.                                             
 
 ## Support
 
