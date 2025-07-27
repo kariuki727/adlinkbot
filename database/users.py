@@ -56,10 +56,6 @@ async def delete_user(user_id):
     await col.delete_one({"user_id": int(user_id)})
 
 
-async def total_users_count():
-    return await col.count_documents({})
-
-
 async def is_user_exist(id):
     user = await col.find_one({"user_id": int(id)})
     return bool(user)
