@@ -26,9 +26,9 @@ bot.onText(/\/start/, (msg) => {
   const username = msg.from.username;
   const welcomeMessage = `Hello, ${username}!\n\n`
     + 'Welcome to the URL Shortener Bot!\n'
-    + 'You can use this bot to shorten URLs using the mybios.eu.org service.\n\n'
+    + 'You can use this bot to shorten URLs.\n\n'
     + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
-    + 'If you haven\'t set your MyBios API token yet, use the command:\n/api YOUR_MYBIOS_API_TOKEN\n\n'
+    + 'If you haven\'t set your Snipn API token yet, use the command:\n/api YOUR_API_TOKEN\n\n'
     + 'Now, go ahead and try it out!';
 
   bot.sendMessage(chatId, welcomeMessage);
@@ -40,10 +40,10 @@ bot.onText(/\/api (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const userToken = match[1].trim(); // Get the API token provided by the user
 
-  // Save the user's MyBios API token to the database
+  // Save the user's Snipn API token to the database
   saveUserToken(chatId, userToken);
 
-  const response = `MyBios API token set successfully. Your token: ${userToken}`;
+  const response = `Snipn API token set successfully. Your token: ${userToken}`;
   bot.sendMessage(chatId, response);
 });
 
@@ -60,18 +60,18 @@ bot.on('message', (msg) => {
 
 // Function to shorten the URL and send the result
 async function shortenUrlAndSend(chatId, Url) {
-  // Retrieve the user's MyBios API token from the database
+  // Retrieve the user's Snipn API token from the database
   const arklinksToken = getUserToken(chatId);
 
   if (!arklinksToken) {
-    bot.sendMessage(chatId, 'Please provide your MyBios API token first. Use the command: /api YOUR_MYBIOS_API_TOKEN');
+    bot.sendMessage(chatId, 'Please provide your Snipn API token first. Use the command: /api YOUR_Snipn_API_TOKEN');
     return;
   }
 
   try {
-    const apiUrl = `https://mybios.eu.org/api?api=${arklinksToken}&url=${Url}`;
+    const apiUrl = `https://snipn.cc/api?api=${arklinksToken}&url=${Url}`;
 
-    // Make a request to the MyBios API to shorten the URL
+    // Make a request to the Snipn API to shorten the URL
     const response = await axios.get(apiUrl);
     const shortUrl = response.data.shortenedUrl;
 
@@ -90,14 +90,14 @@ function isValidUrl(url) {
   return urlPattern.test(url);
 }
 
-// Function to save user's MyBios API token to the database (Replit JSON database)
+// Function to save user's Snipn API token to the database (Replit JSON database)
 function saveUserToken(chatId, token) {
   const dbData = getDatabaseData();
   dbData[chatId] = token;
   fs.writeFileSync('database.json', JSON.stringify(dbData, null, 2));
 }
 
-// Function to retrieve user's MyBios API token from the database
+// Function to retrieve user's Snipn API token from the database
 function getUserToken(chatId) {
   const dbData = getDatabaseData();
   return dbData[chatId];
