@@ -4,7 +4,6 @@ from config import DATABASE_URL, DATABASE_NAME
 client = AsyncIOMotorClient(DATABASE_URL)
 db = client[DATABASE_NAME]
 col = db["users"]
-+
 
 async def get_user(user_id):
     user_id = int(user_id)
