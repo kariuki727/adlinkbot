@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 
 import PyBypass as bypasser
 from aiohttp import web
-from snipny import Snipn
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.errors import FloodWait, MessageNotModified, PeerIdInvalid
