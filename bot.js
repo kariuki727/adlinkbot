@@ -94,23 +94,33 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
+  // Check if the message contains text
+  if (!messageText) {
+    console.log('Received a non-text message or an empty message.');
+    return;
+  }
+
   // If the message is a forwarded message, check for URLs in the text
   if (msg.forward_from || msg.forward_from_chat) {
     extractAndShortenUrls(chatId, messageText);
   }
-  
   // If the message starts with "http://" or "https://", assume it's a URL and try to shorten it
   else if (messageText && (messageText.startsWith('http://') || messageText.startsWith('https://'))) {
     shortenUrlAndSend(chatId, messageText, true); // 'true' means demo mode
   }
   // Check if there are URLs in the message text and shorten all of them
-  else if (messageText) {
+  else {
     extractAndShortenUrls(chatId, messageText);
   }
 });
 
 // Function to extract URLs and shorten them
 async function extractAndShortenUrls(chatId, text) {
+  if (!text) {
+    console.log('No text provided, unable to extract URLs.');
+    return;
+  }
+
   const urls = text.match(/https?:\/\/[^\s]+/g);  // Regular expression to find URLs
   if (urls) {
     for (const url of urls) {
