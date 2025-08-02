@@ -37,6 +37,7 @@ bot.onText(/\/start/, (msg) => {
     + 'It’s super easy – just drop your link here, and I’ll shorten it for you! You’ll get a fresh short link ready to share. 🔗✨\n\n'
     + 'Not set up your Snipn API token yet? No worries! Just send the command:\n'
     + '/api YOUR_API_TOKEN\n\n'
+     + '💠 You can find your api key on https://snipn.cc/member/tools/api\n\n'
     + 'Let’s get started and watch those clicks roll in! 🔥👊\n\n'
     + 'Go ahead and try shortening your first link – the fun begins now! 🎉🎉';
 
