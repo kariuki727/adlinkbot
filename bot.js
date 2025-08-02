@@ -5,8 +5,14 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.redirect('https://snipn.cc');
+  try {
+    res.redirect('https://snipn.cc');
+  } catch (error) {
+    console.error('Error in / route:', error);
+    res.status(500).send('I Love You, Kariuki!');
+  }
 });
+
 
 const port = 8000;
 app.listen(port, () => {
