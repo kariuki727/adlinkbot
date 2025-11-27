@@ -61,7 +61,7 @@ bot.onText(/\/start/, (msg) => {
   };
   
   // 2. Send the image with the welcome message as the caption and include the options
-  const imageUrl = 'https://i.imgur.com/example.jpg'; // **<--- REPLACE WITH YOUR IMAGE URL**
+  const imageUrl = 'https://i.imgur.com/JZQZ0z2.png'; // **<--- REPLACE WITH YOUR IMAGE URL**
   
   bot.sendPhoto(chatId, imageUrl, options);
 });
