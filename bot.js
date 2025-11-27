@@ -41,17 +41,28 @@ bot.onText(/\/start/, (msg) => {
     + 'Let’s get started and watch those clicks roll in! 🔥👊\n\n'
     + 'Go ahead and try shortening your first link – the fun begins now! 🎉🎉';
 
-  // Send welcome message with a "Try Demo" button
-  const options = {
-    reply_markup: {
-      inline_keyboard: [
-        [{
-          text: "Try Demo",
-          callback_data: "try_demo"
-        }]
-      ]
-    }
-  };
+ // Send welcome message with buttons
+  const options = {
+    reply_markup: {
+      inline_keyboard: [
+        [{
+          text: "Try Demo",
+          callback_data: "try_demo"
+        }],
+        // --- ADDED MINI-APP BUTTON HERE ---
+        [{
+          text: "Launch MiniApp 🚀",
+          web_app: {
+            url: "https://briceka.com/tools/snipn/miniapp/index.html"
+          }
+        }]
+        // ------------------------------------
+      ]
+    }
+  };
+  
+  bot.sendMessage(chatId, welcomeMessage, options);
+});
   
   bot.sendMessage(chatId, welcomeMessage, options);
 });
