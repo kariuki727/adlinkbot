@@ -41,25 +41,30 @@ bot.onText(/\/start/, (msg) => {
     + 'Let’s get started and watch those clicks roll in! 🔥👊\n\n'
     + 'Go ahead and try shortening your first link – the fun begins now! 🎉🎉';
 
- // Send welcome message with buttons
+// 1. Define the buttons (inline_keyboard)
   const options = {
+    caption: welcomeMessage, // Text is moved to the 'caption' property
     reply_markup: {
       inline_keyboard: [
         [{
           text: "Try Demo",
           callback_data: "try_demo"
         }],
-        // --- ADDED MINI-APP BUTTON HERE ---
         [{
           text: "Launch MiniApp 🚀",
           web_app: {
             url: "https://briceka.com/tools/snipn/miniapp/index.html"
           }
         }]
-        // ------------------------------------
       ]
     }
   };
+  
+  // 2. Send the image with the welcome message as the caption and include the options
+  const imageUrl = 'https://i.imgur.com/example.jpg'; // **<--- REPLACE WITH YOUR IMAGE URL**
+  
+  bot.sendPhoto(chatId, imageUrl, options);
+});
   
   bot.sendMessage(chatId, welcomeMessage, options);
 });
