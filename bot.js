@@ -61,7 +61,7 @@ bot.onText(/\/start/, (msg) => {
   };
   
   // 2. Send the image with the welcome message as the caption and include the options
-  const imageUrl = 'https://i.imgur.com/JZQZ0z2.png';
+  const imageUrl = 'https://raw.githubusercontent.com/kariuki727/adlinkbot/refs/heads/main/assets/img/botbanner.png';
   
   bot.sendPhoto(chatId, imageUrl, options);
 }); // <--- This is the only closing brace needed for the bot.onText block
