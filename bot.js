@@ -43,13 +43,13 @@ bot.onText(/\/start/, (msg) => {
 
 // 1. Define the buttons (inline_keyboard)
   const options = {
-    caption: welcomeMessage, // Text is moved to the 'caption' property
+    caption: welcomeMessage, // Text moved to the 'caption' property
     reply_markup: {
       inline_keyboard: [
         [{
           text: "Try Demo",
           callback_data: "try_demo"
-        }],
+        }], // Make sure this comma is present
         [{
           text: "Launch MiniApp 🚀",
           web_app: {
@@ -61,16 +61,11 @@ bot.onText(/\/start/, (msg) => {
   };
   
   // 2. Send the image with the welcome message as the caption and include the options
-  const imageUrl = 'https://i.imgur.com/JZQZ0z2.png'; // **<--- REPLACE WITH YOUR IMAGE URL**
+  const imageUrl = 'https://i.imgur.com/JZQZ0z2.png';
   
   bot.sendPhoto(chatId, imageUrl, options);
-});
-  
-  bot.sendMessage(chatId, welcomeMessage, options);
-});
-  
-  bot.sendMessage(chatId, welcomeMessage, options);
-});
+}); // <--- This is the only closing brace needed for the bot.onText block
+// --- END OF THE CORRECTED START HANDLER ---
 
 // Handle the "Try Demo" button click
 bot.on('callback_query', async (query) => {
